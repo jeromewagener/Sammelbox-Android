@@ -18,7 +18,7 @@ public class AlbumItemList extends ArrayAdapter<String>{
 	private final String[] data;
 	
 	public AlbumItemList(Activity context, Drawable[] images, String[] data) {
-		super(context, R.layout.album_item, data);
+		super(context, R.layout.album_list_item, data);
 		this.context = context;
 		this.data = data;
 		this.images = images;
@@ -28,7 +28,7 @@ public class AlbumItemList extends ArrayAdapter<String>{
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		LayoutInflater inflater = context.getLayoutInflater();
-		View rowView = inflater.inflate(R.layout.album_item, null, true);
+		View rowView = inflater.inflate(R.layout.album_list_item, null, true);
 		TextView albumItemData = (TextView) rowView.findViewById(R.id.albumItemData);
 
 		ImageView imageView = (ImageView) rowView.findViewById(R.id.mainAlbumItemPicture);

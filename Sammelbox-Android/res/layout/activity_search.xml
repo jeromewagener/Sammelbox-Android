@@ -10,52 +10,133 @@
         style="@style/sammelboxAndroidHeading"
         android:text="@string/search" />
 
-    <TextView
-        android:id="@+id/lblSelectAlbum"
-        style="@style/sammelboxAndroidSmallHeading"
-        android:text="@string/select_album" />
-
-    <Spinner
-        android:id="@+id/comboSelectAlbum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/lblSelectAlbumItemField"
-        style="@style/sammelboxAndroidSmallHeading"
-        android:text="@string/select_album_field" />
-
-    <Spinner
-        android:id="@+id/comboSelectAlbumItemField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/lblSelectOperator"
-        style="@style/sammelboxAndroidSmallHeading"
-        android:text="@string/select_operator" />
-
-    <Spinner
-        android:id="@+id/comboSelectOperator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/lblSelectValue"
-        style="@style/sammelboxAndroidSmallHeading"
-        android:text="@string/select_value_to_match" />
-    
-    <EditText
-        android:id="@+id/edtSearchValue"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/value_to_search_for"/>
-    
-    <Button
-        android:layout_marginTop="20dp"
-        android:id="@+id/btnSearch"
-        android:layout_width="match_parent"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSelectAlbum"
+            style="@style/sammelboxSearchLabel"
+            android:text="@string/select_album" />
+
+        <Spinner
+            android:id="@+id/comboSelectAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/search_matching_items" />
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSelectAlbumItemField"
+            style="@style/sammelboxSearchLabel"
+            android:text="@string/select_album_field" />
+
+        <Spinner
+            android:id="@+id/comboSelectAlbumItemField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSelectOperator"
+            style="@style/sammelboxSearchLabel"
+            android:text="@string/select_operator" />
+
+        <Spinner
+            android:id="@+id/comboSelectOperator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSelectValue"
+            style="@style/sammelboxSearchLabel"
+            android:text="@string/select_value_to_match" />
+
+        <EditText
+            android:id="@+id/edtSearchValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/value_to_search_for" />
+    </LinearLayout>
+
+    <TextView
+        style="@style/sammelboxAndroidSubHeading"
+        android:text="@string/search_criteria"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/listSearchCriteria"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/lblSelectCriteriaConnector"
+            style="@style/sammelboxSearchLabel"
+            android:text="@string/select_criteria_connector" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/radioConnectByAnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connect_by_and" />
+
+            <RadioButton
+                android:id="@+id/radioConnectByOr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connect_by_or" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <TextView style="@style/sammelboxAndroidSeparator" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnAddCriteria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/add_criteria_to_search" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/search_matching_items" />
+    </LinearLayout>
 
 </LinearLayout>

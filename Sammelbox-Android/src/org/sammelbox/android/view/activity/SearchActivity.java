@@ -30,6 +30,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 public class SearchActivity extends Activity {
+	private List<QueryComponent> queryComponents = new ArrayList<QueryComponent>();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -90,14 +92,6 @@ public class SearchActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					QueryComponent queryComponent = new QueryComponent(
-							(String) comboSelectAlbumItemField.getSelectedItem(),
-							QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
-							((EditText) findViewById(R.id.edtSearchValue)).getText().toString());
-					
-					List<QueryComponent> queryComponents = new ArrayList<QueryComponent>();
-					queryComponents.add(queryComponent);
-					
 					String rawSqlQuery = QueryBuilder.buildQuery(queryComponents, true, (String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
 					
 					GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
@@ -107,6 +101,19 @@ public class SearchActivity extends Activity {
 					Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
 	                startActivity(openAlbumItemListToBrowse);
 				}
+				
+				return true;
+			}
+		});
+		
+		Button btnAddSearchCriteria = (Button) findViewById(R.id.btnAddCriteria);
+		btnAddSearchCriteria.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				queryComponents.add(new QueryComponent(
+						(String) comboSelectAlbumItemField.getSelectedItem(),
+						QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
+						((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
 				
 				return true;
 			}
