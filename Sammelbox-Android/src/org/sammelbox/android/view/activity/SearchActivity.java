@@ -12,6 +12,7 @@ import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
 import org.sammelbox.android.model.querybuilder.QueryComponent;
+import org.sammelbox.android.view.SearchCriteriaList;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,11 +24,17 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 	private List<QueryComponent> queryComponents = new ArrayList<QueryComponent>();
@@ -92,7 +99,24 @@ public class SearchActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					String rawSqlQuery = QueryBuilder.buildQuery(queryComponents, true, (String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
+					boolean connectByAnd = true;
+					if (queryComponents.isEmpty()) {
+						queryComponents.add(new QueryComponent(
+								(String) comboSelectAlbumItemField.getSelectedItem(),
+								QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
+								((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
+					} else {
+						RadioButton radioConnectByAnd = (RadioButton) findViewById(R.id.radioConnectByAnd);
+						if (radioConnectByAnd.isChecked()) {
+							connectByAnd = true;
+						} else {
+							connectByAnd = false;
+						}
+					}
+					
+					String rawSqlQuery = QueryBuilder.buildQuery(queryComponents, connectByAnd, (String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
+					
+					Toast.makeText(SearchActivity.this, rawSqlQuery, Toast.LENGTH_LONG).show();
 					
 					GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
 					GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
@@ -109,13 +133,56 @@ public class SearchActivity extends Activity {
 		Button btnAddSearchCriteria = (Button) findViewById(R.id.btnAddCriteria);
 		btnAddSearchCriteria.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public boolean onTouch(View arg0, MotionEvent arg1) {
-				queryComponents.add(new QueryComponent(
-						(String) comboSelectAlbumItemField.getSelectedItem(),
-						QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
-						((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
+			public boolean onTouch(View arg0, MotionEvent motionEvent) {
+				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+					queryComponents.add(new QueryComponent(
+							(String) comboSelectAlbumItemField.getSelectedItem(),
+							QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
+							((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
+					
+					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
+					lblSearchCriteria.setVisibility(View.VISIBLE);
+					
+					ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
+					listSearchCriteria.setVisibility(View.VISIBLE);				
+					SearchCriteriaList adapter = new SearchCriteriaList(SearchActivity.this, queryComponents);
+					listSearchCriteria.setAdapter(adapter);
+					
+					TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
+					lblSelectCriteriaConnector.setVisibility(View.VISIBLE);
+					RadioGroup radioSearchAndOrConnector = (RadioGroup) findViewById(R.id.radioSearchAndOrConnector);
+					radioSearchAndOrConnector.setVisibility(View.VISIBLE);
+										
+					return true;
+				} else {
+					return false;
+				}
 				
-				return true;
+			}
+		});
+		
+		ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
+		listSearchCriteria.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				queryComponents.remove(position);
+				
+				ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
+				SearchCriteriaList adapter = new SearchCriteriaList(SearchActivity.this, queryComponents);
+				listSearchCriteria.setAdapter(adapter);
+				
+				if (queryComponents.isEmpty()) {
+					listSearchCriteria.setVisibility(View.GONE);		
+					
+					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
+					lblSearchCriteria.setVisibility(View.GONE);
+
+					TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
+					lblSelectCriteriaConnector.setVisibility(View.GONE);
+					RadioGroup radioSearchAndOrConnector = (RadioGroup) findViewById(R.id.radioSearchAndOrConnector);
+					radioSearchAndOrConnector.setVisibility(View.GONE);
+				}
 			}
 		});
 	}
