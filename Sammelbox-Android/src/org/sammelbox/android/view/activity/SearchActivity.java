@@ -34,7 +34,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 	private List<QueryComponent> queryComponents = new ArrayList<QueryComponent>();
@@ -54,7 +53,7 @@ public class SearchActivity extends Activity {
 		
 		// Album selection spinner (combobox)
 		ArrayAdapter<String> albumListAdapter = new ArrayAdapter<String>(
-				this, android.R.layout.simple_spinner_dropdown_item, 
+				this, android.R.layout.simple_spinner_item, 
 				new ArrayList<String>(albumNameToTableNameMapping.keySet()));
 		albumListAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		comboSelectAlbum.setAdapter(albumListAdapter);

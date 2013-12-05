@@ -29,13 +29,13 @@ public class SearchCriteriaList extends ArrayAdapter<QueryComponent>{
 		View rowView = inflater.inflate(R.layout.search_criteria_list_item, null, true);
 		
 		TextView itemField = (TextView) rowView.findViewById(R.id.searchCriteriaItemField);
-		itemField.setText(queryComponents.get(position).getFieldName());
+		itemField.setText(queryComponents.get(position).getFieldName() + " ");
 		
 		TextView operator = (TextView) rowView.findViewById(R.id.searchCriteriaOperator);
-		operator.setText(queryComponents.get(position).getOperator().toSqlOperator());
+		operator.setText(queryComponents.get(position).getOperator().toSqlOperator() + " ");
 		
 		TextView value = (TextView) rowView.findViewById(R.id.searchCriteriaValue);
-		value.setText(queryComponents.get(position).getValue());
+		value.setText(queryComponents.get(position).getValue() + " ");
 		
 		return rowView;
 	}
