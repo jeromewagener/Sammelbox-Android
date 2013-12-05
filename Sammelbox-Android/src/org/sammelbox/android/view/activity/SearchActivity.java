@@ -41,52 +41,47 @@ public class SearchActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// hide title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
+		// default stuff
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		
-		final Spinner comboSelectAlbum = (Spinner) findViewById(R.id.comboSelectAlbum);		
-		comboSelectAlbum.setFocusable(true); 
-		comboSelectAlbum.setFocusableInTouchMode(true);
-		comboSelectAlbum.requestFocus();
 		
+		final Spinner comboSelectAlbum = (Spinner) findViewById(R.id.comboSelectAlbum);		
 		final Map<String, String> albumNameToTableNameMapping = GlobalState.getAlbumNameToTableName(this);
 		
 		// Album selection spinner (combobox)
-		ArrayAdapter<String> albumListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, 
+		ArrayAdapter<String> albumListAdapter = new ArrayAdapter<String>(
+				this, android.R.layout.simple_spinner_dropdown_item, 
 				new ArrayList<String>(albumNameToTableNameMapping.keySet()));
+		albumListAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		comboSelectAlbum.setAdapter(albumListAdapter);
 		comboSelectAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
-
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				updateAlbumItemFieldSelectionSpinner(albumNameToTableNameMapping,
 						albumNameToTableNameMapping.get((String) comboSelectAlbum.getSelectedItem()));
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
+			public void onNothingSelected(AdapterView<?> parent) {}
 		});
-		
-		albumListAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		comboSelectAlbum.setAdapter(albumListAdapter);
 		
 		// Album item field selection spinner (combobox)
 		updateAlbumItemFieldSelectionSpinner(albumNameToTableNameMapping, 
 				albumNameToTableNameMapping.get((String) comboSelectAlbum.getSelectedItem()));
 		final Spinner comboSelectAlbumItemField = (Spinner) findViewById(R.id.comboSelectAlbumItemField);
 		comboSelectAlbumItemField.setOnItemSelectedListener(new OnItemSelectedListener() {
-
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				updateOperatorSelectionSpinner(SearchActivity.this, (String) comboSelectAlbumItemField.getSelectedItem(), 
 						albumNameToTableNameMapping.get((String) comboSelectAlbum.getSelectedItem()));
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
+			public void onNothingSelected(AdapterView<?> parent) {}
 		});
 		
 		// Operator selection spinner (combobox)
@@ -99,24 +94,17 @@ public class SearchActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					boolean connectByAnd = true;
 					if (queryComponents.isEmpty()) {
-						queryComponents.add(new QueryComponent(
-								(String) comboSelectAlbumItemField.getSelectedItem(),
-								QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
-								((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
-					} else {
-						RadioButton radioConnectByAnd = (RadioButton) findViewById(R.id.radioConnectByAnd);
-						if (radioConnectByAnd.isChecked()) {
-							connectByAnd = true;
-						} else {
-							connectByAnd = false;
-						}
+						queryComponents.add(getQueryComponentFromView());
 					}
 					
-					String rawSqlQuery = QueryBuilder.buildQuery(queryComponents, connectByAnd, (String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
+					RadioButton radioConnectByAnd = (RadioButton) findViewById(R.id.radioConnectByAnd);
+					String rawSqlQuery = QueryBuilder.buildQuery(
+							queryComponents, radioConnectByAnd.isChecked(), 
+							(String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
 					
-					Toast.makeText(SearchActivity.this, rawSqlQuery, Toast.LENGTH_LONG).show();
+					// clear value to search
+					((EditText) findViewById(R.id.edtSearchValue)).getText().clear();
 					
 					GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
 					GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
@@ -133,12 +121,14 @@ public class SearchActivity extends Activity {
 		Button btnAddSearchCriteria = (Button) findViewById(R.id.btnAddCriteria);
 		btnAddSearchCriteria.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public boolean onTouch(View arg0, MotionEvent motionEvent) {
+			public boolean onTouch(View parent, MotionEvent motionEvent) {
 				if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-					queryComponents.add(new QueryComponent(
-							(String) comboSelectAlbumItemField.getSelectedItem(),
-							QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
-							((EditText) findViewById(R.id.edtSearchValue)).getText().toString()));
+					EditText edtSearchValue = ((EditText) findViewById(R.id.edtSearchValue));
+					if (edtSearchValue.getText().toString().isEmpty()) {
+						edtSearchValue.requestFocus();
+					}
+					
+					queryComponents.add(getQueryComponentFromView());
 					
 					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
 					lblSearchCriteria.setVisibility(View.VISIBLE);
@@ -217,6 +207,13 @@ public class SearchActivity extends Activity {
 		
 		operatorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		comboSelectOperator.setAdapter(operatorAdapter);
+	}
+	
+	private QueryComponent getQueryComponentFromView() {
+		return new QueryComponent(
+				(String) ((Spinner) findViewById(R.id.comboSelectAlbumItemField)).getSelectedItem(),
+				QueryBuilder.getQueryOperator(((String) ((Spinner) findViewById(R.id.comboSelectOperator)).getSelectedItem())),
+				((EditText) findViewById(R.id.edtSearchValue)).getText().toString());
 	}
 	
 	@Override
