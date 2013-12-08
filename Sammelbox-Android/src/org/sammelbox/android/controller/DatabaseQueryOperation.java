@@ -57,8 +57,8 @@ public class DatabaseQueryOperation {
 				StringBuilder data = new StringBuilder();
 				
 				for (String fieldName : fieldNameToTypeMapping.keySet()) {
-					data.append(fieldName + ": " + readToStringByFieldnameAndType(
-							cursor, fieldNameToTypeMapping, fieldName, selectedTableName) + "\n");
+					data.append("<b>" + fieldName + "</b>: " + readToStringByFieldnameAndType(
+							cursor, fieldNameToTypeMapping, fieldName, selectedTableName) + "<br>");
 				}
 				
 				Drawable primaryImage = retrievePrimaryImage(

@@ -4,6 +4,7 @@ import org.sammelbox.R;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class AlbumItemList extends ArrayAdapter<String>{
 		TextView albumItemData = (TextView) rowView.findViewById(R.id.albumItemData);
 
 		ImageView imageView = (ImageView) rowView.findViewById(R.id.mainAlbumItemPicture);
-		albumItemData.setText(data[position]);
+		albumItemData.setText(Html.fromHtml(data[position]));
 
 		imageView.setImageDrawable(images[position]);
 		return rowView;
