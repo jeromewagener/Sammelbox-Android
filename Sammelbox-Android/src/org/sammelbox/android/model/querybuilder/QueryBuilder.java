@@ -125,7 +125,7 @@ public final class QueryBuilder {
 
 		Map<String, FieldType> fieldNameToFieldTypeMap = 
 				DatabaseQueryOperation.retrieveFieldnameToFieldTypeMapping(
-						DatabaseWrapper.getSQLiteDatabase(context), context, DatabaseStringUtilities.generateTableName(albumName));
+						DatabaseWrapper.getSQLiteDatabaseInstance(context), context, DatabaseStringUtilities.generateTableName(albumName));
 			
 		for (int i=0; i<queryComponents.size(); i++) {	
 			

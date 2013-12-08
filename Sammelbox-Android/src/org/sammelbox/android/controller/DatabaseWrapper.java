@@ -6,10 +6,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class DatabaseWrapper {
+	private static DatabaseOpenHelper databaseOpenHelper = null;
+	private static SQLiteDatabase singleDBInstance = null;
 	
-	public static SQLiteDatabase getSQLiteDatabase(Context context) {
-		DatabaseOpenHelper db = new DatabaseOpenHelper(context);
-		return db.getReadableDatabase();
+	public static SQLiteDatabase getSQLiteDatabaseInstance(Context context) {
+		if (singleDBInstance != null) {
+			return singleDBInstance;
+		}
+		
+		DatabaseOpenHelper openHelper = new DatabaseOpenHelper(context);
+		singleDBInstance = openHelper.getReadableDatabase();
+		
+		return singleDBInstance;
+	}
+	
+	public static void closeDBConnection(SQLiteDatabase db) {
+		databaseOpenHelper.close();
 	}
     
 	public static Cursor executeRawSQLQuery(SQLiteDatabase database, String rawQuery) {

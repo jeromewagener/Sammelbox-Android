@@ -9,6 +9,7 @@ import android.content.Context;
 
 public class GlobalState {
 	private static String selectedAlbum = null;
+	private static Long selectedAlbumItemID = null;
 	private static Map<String,String> albumNameToTableName = null;
 	/** The last simplified album item result set that was retrieved */
 	private static SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet = null;
@@ -40,5 +41,13 @@ public class GlobalState {
 	public static void setSimplifiedAlbumItemResultSet(
 			SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet) {
 		GlobalState.simplifiedAlbumItemResultSet = simplifiedAlbumItemResultSet;
+	}
+
+	public static void setSelectedAlbumItemID(Long itemID) {
+		GlobalState.selectedAlbumItemID = itemID;
+	}
+	
+	public static Long getSelectedAlbumItemID() {
+		return GlobalState.selectedAlbumItemID;
 	}
 }

@@ -1,4 +1,4 @@
-package org.sammelbox.android.view;
+package org.sammelbox.android.view.adapter;
 
 import org.sammelbox.R;
 
@@ -12,18 +12,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/** A list container to show album items */
-public class AlbumItemList extends ArrayAdapter<String>{
+/** A list container adapter to show album items */
+public class AlbumItemListAdapter extends ArrayAdapter<String>{
 	private final Activity context;
+	private final Long[] itemIDs;
 	private final Drawable[] images;
 	private final String[] data;
 	
-	public AlbumItemList(Activity context, Drawable[] images, String[] data) {
+	public AlbumItemListAdapter(Activity context, Long[] itemIDs, Drawable[] images, String[] data) {
 		super(context, R.layout.album_list_item, data);
 		this.context = context;
+		this.itemIDs = itemIDs;
 		this.data = data;
 		this.images = images;
 
+	}
+	
+	public Long getIDByPosition(int position) {
+		return itemIDs[position];
 	}
 	
 	@Override

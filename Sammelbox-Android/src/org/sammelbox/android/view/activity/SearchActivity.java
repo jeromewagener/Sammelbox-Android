@@ -12,7 +12,7 @@ import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
 import org.sammelbox.android.model.querybuilder.QueryComponent;
-import org.sammelbox.android.view.SearchCriteriaList;
+import org.sammelbox.android.view.adapter.SearchCriteriaListAdapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -107,7 +107,7 @@ public class SearchActivity extends Activity {
 					
 					GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
 					GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
-							DatabaseWrapper.executeRawSQLQuery(DatabaseWrapper.getSQLiteDatabase(SearchActivity.this), rawSqlQuery)));
+							DatabaseWrapper.executeRawSQLQuery(DatabaseWrapper.getSQLiteDatabaseInstance(SearchActivity.this), rawSqlQuery)));
 					
 					Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
 	                startActivity(openAlbumItemListToBrowse);
@@ -134,7 +134,7 @@ public class SearchActivity extends Activity {
 					
 					ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
 					listSearchCriteria.setVisibility(View.VISIBLE);				
-					SearchCriteriaList adapter = new SearchCriteriaList(SearchActivity.this, queryComponents);
+					SearchCriteriaListAdapter adapter = new SearchCriteriaListAdapter(SearchActivity.this, queryComponents);
 					listSearchCriteria.setAdapter(adapter);
 					
 					TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
@@ -158,7 +158,7 @@ public class SearchActivity extends Activity {
 				queryComponents.remove(position);
 				
 				ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
-				SearchCriteriaList adapter = new SearchCriteriaList(SearchActivity.this, queryComponents);
+				SearchCriteriaListAdapter adapter = new SearchCriteriaListAdapter(SearchActivity.this, queryComponents);
 				listSearchCriteria.setAdapter(adapter);
 				
 				if (queryComponents.isEmpty()) {
@@ -178,7 +178,7 @@ public class SearchActivity extends Activity {
 
 	private void updateAlbumItemFieldSelectionSpinner(Map<String, String> albumNameToTableNameMapping, String albumTable) {
 		Map<String, FieldType> fieldNameToTypeMapping = DatabaseQueryOperation.retrieveFieldnameToFieldTypeMapping(
-				DatabaseWrapper.getSQLiteDatabase(this), this, albumTable);
+				DatabaseWrapper.getSQLiteDatabaseInstance(this), this, albumTable);
 		
 		Spinner comboSelectAlbumItemField = (Spinner) findViewById(R.id.comboSelectAlbumItemField);
 		ArrayAdapter<String> albumItemFieldListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, 
@@ -190,7 +190,7 @@ public class SearchActivity extends Activity {
 	
 	private void updateOperatorSelectionSpinner(Context context, String fieldName, String albumTableName) {
 		FieldType fieldType = DatabaseQueryOperation.retrieveFieldnameToFieldTypeMapping(
-				DatabaseWrapper.getSQLiteDatabase(this), context, albumTableName).get(fieldName);
+				DatabaseWrapper.getSQLiteDatabaseInstance(this), context, albumTableName).get(fieldName);
 		
 		ArrayList<String> operators = new ArrayList<String>();
 		if (fieldType.equals(FieldType.TEXT) || fieldType.equals(FieldType.URL) || fieldType.equals(FieldType.OPTION)) {

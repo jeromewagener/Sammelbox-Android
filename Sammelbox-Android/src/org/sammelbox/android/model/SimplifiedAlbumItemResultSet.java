@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 /** A simplified album item container. Each album item has at most one primary drawable, 
  * and all data (all fields) are compiled into a single string */
 public class SimplifiedAlbumItemResultSet {
+	/** For each album item, the id is stored in parallel to its primary image and its data */
+	private List<Long> itemIDs = new ArrayList<Long>();
+	
 	/** For each album item, all data is compiled into a single string */
 	private List<String> data = new ArrayList<String>();
 
@@ -22,11 +25,16 @@ public class SimplifiedAlbumItemResultSet {
 
 	/** Each album item has at most one primary drawable, 
 	 * and all data (all fields) must be compiled into a single string */
-	public void addSimplifiedAlbumItem(Drawable image, String data) {
+	public void addSimplifiedAlbumItem(Long itemID, Drawable image, String data) {
+		this.itemIDs.add(itemID);
 		this.images.add(image);
 		this.data.add(data);
 	}
 
+	public Long[] getResultSetItemIDsAsArray() {
+		return Arrays.copyOf(itemIDs.toArray(), itemIDs.toArray().length, Long[].class);
+	}
+	
 	public String[] getResultSetDataAsStringArray() {
 		return Arrays.copyOf(data.toArray(), data.toArray().length, String[].class);
 	}

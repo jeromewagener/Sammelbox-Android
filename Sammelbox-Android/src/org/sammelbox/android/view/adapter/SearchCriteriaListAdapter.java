@@ -1,4 +1,4 @@
-package org.sammelbox.android.view;
+package org.sammelbox.android.view.adapter;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-/** A list container to show album items */
-public class SearchCriteriaList extends ArrayAdapter<QueryComponent>{
+/** A list container adapter to show album items */
+public class SearchCriteriaListAdapter extends ArrayAdapter<QueryComponent>{
 	private final Activity context;
 	private List<QueryComponent> queryComponents;
 	
-	public SearchCriteriaList(Activity context, List<QueryComponent> queryComponents) {
+	public SearchCriteriaListAdapter(Activity context, List<QueryComponent> queryComponents) {
 		super(context, R.layout.search_criteria_list_item, queryComponents);
 		this.context = context;
 		this.queryComponents = queryComponents;

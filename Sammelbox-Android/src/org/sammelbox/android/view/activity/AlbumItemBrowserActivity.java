@@ -3,9 +3,10 @@ package org.sammelbox.android.view.activity;
 import org.sammelbox.R;
 import org.sammelbox.android.GlobalState;
 import org.sammelbox.android.model.SimplifiedAlbumItemResultSet;
-import org.sammelbox.android.view.AlbumItemList;
+import org.sammelbox.android.view.adapter.AlbumItemListAdapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -27,8 +28,9 @@ public class AlbumItemBrowserActivity extends Activity {
 		
 		SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet = GlobalState.getSimplifiedAlbumItemResultSet();
 		
-		AlbumItemList adapter = new AlbumItemList(
+		AlbumItemListAdapter adapter = new AlbumItemListAdapter(
 				AlbumItemBrowserActivity.this,
+				simplifiedAlbumItemResultSet.getResultSetItemIDsAsArray(),
 				simplifiedAlbumItemResultSet.getResultSetImagesAsDrawableArray(),
 				simplifiedAlbumItemResultSet.getResultSetDataAsStringArray());
 		
@@ -38,7 +40,10 @@ public class AlbumItemBrowserActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO show other images if album item has multiple
+				GlobalState.setSelectedAlbumItemID(((AlbumItemListAdapter) parent.getAdapter()).getIDByPosition(position));
+				
+				Intent openImageGallery = new Intent(AlbumItemBrowserActivity.this, GalleryActivity.class);
+                startActivity(openImageGallery);
 			}
 		});
 	}

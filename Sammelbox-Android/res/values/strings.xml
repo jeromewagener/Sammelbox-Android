@@ -30,5 +30,8 @@
     <string name="search_criteria">Search criteria</string>
     <string name="title_activity_search">Search</string>
     <string name="clear_search_criteria">Clear search criteria</string>
+    <string name="title_activity_gallery">Gallery Activity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="imageGallery">Image Gallery</string>
 
 </resources>

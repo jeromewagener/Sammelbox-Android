@@ -1,6 +1,7 @@
 package org.sammelbox.android.view.activity;
 
 import org.sammelbox.R;
+import org.sammelbox.android.controller.DatabaseWrapper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -67,4 +68,10 @@ public class WelcomeActivity extends Activity {
         return true;
     }
     
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        
+        DatabaseWrapper.closeDBConnection(DatabaseWrapper.getSQLiteDatabaseInstance(WelcomeActivity.this));
+    }
 }

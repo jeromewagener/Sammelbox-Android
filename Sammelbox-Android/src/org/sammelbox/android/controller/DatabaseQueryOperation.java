@@ -19,7 +19,7 @@ import android.os.Environment;
 public class DatabaseQueryOperation {
 	public static Map<String, String> getAlbumNamesToAlbumTablesMapping(Context context) {
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
-				DatabaseWrapper.getSQLiteDatabase(context), "select * from album_master_table");
+				DatabaseWrapper.getSQLiteDatabaseInstance(context), "select * from album_master_table");
 		
 		final Map<String,String> albumNameToTableName = new HashMap<String, String>();
 		
@@ -39,7 +39,7 @@ public class DatabaseQueryOperation {
 	public static SimplifiedAlbumItemResultSet getAllAlbumItemsFromAlbum(Context context) {
 		String selectedTableName = GlobalState.getAlbumNameToTableName(context).get(GlobalState.getSelectedAlbum());
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
-				DatabaseWrapper.getSQLiteDatabase(context), "select * from " + selectedTableName);
+				DatabaseWrapper.getSQLiteDatabaseInstance(context), "select * from " + selectedTableName);
 		
 		return getAlbumItems(context, cursor);
 	}
@@ -49,10 +49,12 @@ public class DatabaseQueryOperation {
 		
 		String selectedTableName = GlobalState.getAlbumNameToTableName(context).get(GlobalState.getSelectedAlbum());
 		Map<String, FieldType> fieldNameToTypeMapping = 
-				retrieveFieldnameToFieldTypeMapping(DatabaseWrapper.getSQLiteDatabase(context), context, selectedTableName);
+				retrieveFieldnameToFieldTypeMapping(DatabaseWrapper.getSQLiteDatabaseInstance(context), context, selectedTableName);
 		
 		if (cursor.moveToFirst()) {
 			while (cursor.isAfterLast() != true) {
+				Long itemID = cursor.getLong(cursor.getColumnIndex("id"));
+				
 				Drawable placeHolderImage = context.getResources().getDrawable(R.drawable.placeholder);
 				StringBuilder data = new StringBuilder();
 				
@@ -62,12 +64,12 @@ public class DatabaseQueryOperation {
 				}
 				
 				Drawable primaryImage = retrievePrimaryImage(
-						context, selectedTableName, String.valueOf(cursor.getLong(cursor.getColumnIndex("id"))));
+						context, selectedTableName, String.valueOf(itemID));
 				if (primaryImage == null) {
 					primaryImage = placeHolderImage;
 				}
 				
-				simplifiedAlbumItemResultSet.addSimplifiedAlbumItem(primaryImage, data.toString());
+				simplifiedAlbumItemResultSet.addSimplifiedAlbumItem(itemID, primaryImage, data.toString());
 				cursor.moveToNext();
 			}
 		}
@@ -78,7 +80,7 @@ public class DatabaseQueryOperation {
 	
 	private static Drawable retrievePrimaryImage(Context context, String albumTableName, String albumItemId) {
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
-				DatabaseWrapper.getSQLiteDatabase(context),
+				DatabaseWrapper.getSQLiteDatabaseInstance(context),
 				"select * from " + albumTableName + "_pictures where album_item_foreign_key = ?", albumItemId);
 		
 		if (cursor.moveToFirst()) {
@@ -109,7 +111,7 @@ public class DatabaseQueryOperation {
 		}
 		
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
-				DatabaseWrapper.getSQLiteDatabase(context),
+				DatabaseWrapper.getSQLiteDatabaseInstance(context),
 				"select * from " + albumTableName + "_typeinfo");
 				
 		if (cursor.moveToFirst()) {
@@ -147,5 +149,27 @@ public class DatabaseQueryOperation {
 		}
 		
 		return null;
+	}
+	
+	public static ArrayList<Drawable> getImages(Context context, String albumTableName, Long albumItemID) {
+		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
+				DatabaseWrapper.getSQLiteDatabaseInstance(context),
+				"select * from " + albumTableName + "_pictures where album_item_foreign_key = ?", 
+				String.valueOf(GlobalState.getSelectedAlbumItemID()));
+
+		ArrayList<Drawable> galleryImages = new ArrayList<Drawable>();
+		
+		if (cursor.moveToFirst()) {
+			while (cursor.isAfterLast() != true) {				
+				String thumbnailName = cursor.getString(cursor.getColumnIndex("thumbnail_picture_filename")); 
+				galleryImages.add(Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Sammelbox/thumbnails/" + thumbnailName));
+				
+				cursor.moveToNext();
+			}
+		}
+
+		cursor.close();
+		
+		return galleryImages;
 	}
 }

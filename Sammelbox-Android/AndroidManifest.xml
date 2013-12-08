@@ -48,6 +48,10 @@
             android:name="org.sammelbox.android.view.activity.AdvancedSearchActivity"
             android:label="@string/title_activity_search" >
         </activity>
+        <activity
+            android:name="org.sammelbox.android.view.activity.GalleryActivity"
+            android:label="@string/title_activity_gallery" >
+        </activity>
     </application>
 
 </manifest>
