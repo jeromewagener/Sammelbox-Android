@@ -73,7 +73,7 @@
     <TextView
         android:id="@+id/lblSearchCriteria"
         style="@style/sammelboxAndroidSubHeading"
-        android:text="List of criteria"
+        android:text="@string/list_of_criteria"
         android:visibility="gone" />
 
     <ListView

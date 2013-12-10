@@ -33,5 +33,6 @@
     <string name="title_activity_gallery">Gallery Activity</string>
     <string name="hello_world">Hello world!</string>
     <string name="imageGallery">Image Gallery</string>
+    <string name="list_of_criteria">List of criteria</string>
 
 </resources>

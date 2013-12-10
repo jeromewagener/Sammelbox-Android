@@ -37,10 +37,9 @@ public class AlbumItemListAdapter extends ArrayAdapter<String>{
 		LayoutInflater inflater = context.getLayoutInflater();
 		View rowView = inflater.inflate(R.layout.album_list_item, null, true);
 		TextView albumItemData = (TextView) rowView.findViewById(R.id.albumItemData);
-
-		ImageView imageView = (ImageView) rowView.findViewById(R.id.mainAlbumItemPicture);
 		albumItemData.setText(Html.fromHtml(data[position]));
-
+		
+		ImageView imageView = (ImageView) rowView.findViewById(R.id.mainAlbumItemPicture);
 		imageView.setImageDrawable(images[position]);
 		return rowView;
 	}
