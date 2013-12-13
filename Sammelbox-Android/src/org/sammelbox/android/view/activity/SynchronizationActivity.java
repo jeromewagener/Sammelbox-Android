@@ -5,6 +5,8 @@ import java.lang.ref.WeakReference;
 import org.sammelbox.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jeromewagener.soutils.android.beaconing.BeaconReceiver;
@@ -20,6 +23,7 @@ import com.jeromewagener.soutils.android.beaconing.BeaconReceiver;
 public class SynchronizationActivity extends Activity {
 	private BeaconReceiver beaconReceiver = null;
 	private final MessageHandler messageHandler = new MessageHandler(this);
+	private static boolean identificationInputBoxShown = false;
 	
 	private static class MessageHandler extends Handler {
 		private final WeakReference<SynchronizationActivity> synchronizationActivity;
@@ -37,6 +41,37 @@ public class SynchronizationActivity extends Activity {
 				String receivedMessage = message.getData().getString("receivedMessage");
 				
 				Toast.makeText(synchronizationActivity.get(), senderIpAddress + " : " + receivedMessage, Toast.LENGTH_SHORT).show();
+				
+				if (!identificationInputBoxShown && receivedMessage.startsWith("<sammelbox id_beacon=") &&
+						receivedMessage.endsWith("</sammelbox>")) {
+					identificationInputBoxShown = true;
+					
+					AlertDialog.Builder alert = new AlertDialog.Builder(synchronizationActivity.get());
+
+					alert.setTitle("Enter Synchronization Code");
+					alert.setMessage("Please enter the synchronization code shown by Sammelbox on your computer");
+
+					// Set an EditText view to get user input 
+					final EditText input = new EditText(synchronizationActivity.get());
+					alert.setView(input);
+
+					alert.setPositiveButton("Code entered", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							String value = input.getText().toString();
+							// Do something with value!
+						}
+					});
+
+					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							final Button syncButton = (Button) synchronizationActivity.get().findViewById(R.id.btnSynchronize);
+							syncButton.setText(R.string.synchronize_button);
+							syncButton.setEnabled(true);
+						}
+					});
+
+					alert.show();
+				}
 			}
 		}
 	}
@@ -48,12 +83,16 @@ public class SynchronizationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_synchronization);
 		
-		Button syncButton = (Button) findViewById(R.id.btnSynchronize);
+		final Button syncButton = (Button) findViewById(R.id.btnSynchronize);
 		syncButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				beaconReceiver = new BeaconReceiver(messageHandler);
 				beaconReceiver.start();
+				
+				identificationInputBoxShown = false;
+				syncButton.setText("Synchronizing...");
+				syncButton.setEnabled(false);
 			}
 		});
 	}
