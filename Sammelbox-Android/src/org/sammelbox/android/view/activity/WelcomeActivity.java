@@ -1,7 +1,10 @@
 package org.sammelbox.android.view.activity;
 
+import java.io.File;
+
 import org.sammelbox.R;
 import org.sammelbox.android.controller.DatabaseWrapper;
+import org.sammelbox.android.controller.FileSystemLocations;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,6 +22,12 @@ public class WelcomeActivity extends Activity {
     	
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        
+        // Initialize folder structure TODO extract into service
+        File sammelboxHome = new File(FileSystemLocations.SAMMELBOX_HOME);
+        if (!sammelboxHome.exists()) {
+        	sammelboxHome.mkdir();
+        }
         
         // Browse album items and searches
         ImageButton btnOpenBrowseAlbumsAndSearches = (ImageButton) findViewById(R.id.btnOpenBrowseAlbumsAndSearches);

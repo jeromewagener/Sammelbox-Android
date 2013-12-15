@@ -8,7 +8,7 @@
     <TextView
         android:id="@+id/lblGallery"
         style="@style/sammelboxAndroidHeading"
-        android:text="@string/imageGallery" />
+        android:text="@string/image_gallery" />
     
     <ListView
         android:id="@+id/listAlbumItemImages"

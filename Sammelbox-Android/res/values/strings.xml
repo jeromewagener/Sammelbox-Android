@@ -32,7 +32,15 @@
     <string name="clear_search_criteria">Clear search criteria</string>
     <string name="title_activity_gallery">Gallery Activity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="imageGallery">Image Gallery</string>
+    <string name="image_gallery">Image Gallery</string>
     <string name="list_of_criteria">List of criteria</string>
-
+    <string name="cancel">Cancel</string>
+    <string name="click_to_sync">Click to synchronize. Please enter the synchronization code when asked..</string>
+	<string name="search_for_sync_partner">Searching for Sammelbox PC-App to synchronize with</string>
+	<string name="sync_successful">Synchronization successful. Have fun!</string>
+	<string name="transferring_data">Transferring data. Click to cancel.</string>
+	<string name="code_entered">Synchronize now</string>
+	<string name="wrong_code_entered_abort">The code you have entered is invalid. Aborting!</string>
+	<string name="enter_code_dialog_title">Enter Synchronization Code</string>
+	<string name="enter_code_dialog_message">Please enter the synchronization code shown by Sammelbox on your PC</string>
 </resources>

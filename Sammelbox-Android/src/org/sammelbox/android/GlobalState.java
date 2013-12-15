@@ -7,6 +7,7 @@ import org.sammelbox.android.model.SimplifiedAlbumItemResultSet;
 
 import android.content.Context;
 
+// TODO very bad practice. Only for testing purposes. Sent this with the intent!
 public class GlobalState {
 	private static String selectedAlbum = null;
 	private static Long selectedAlbumItemID = null;

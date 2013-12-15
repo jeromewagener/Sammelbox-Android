@@ -21,7 +21,9 @@ public class DatabaseWrapper {
 	}
 	
 	public static void closeDBConnection(SQLiteDatabase db) {
-		databaseOpenHelper.close();
+		if (databaseOpenHelper != null) {
+			databaseOpenHelper.close();
+		}
 	}
     
 	public static Cursor executeRawSQLQuery(SQLiteDatabase database, String rawQuery) {
