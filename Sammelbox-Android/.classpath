@@ -5,7 +5,10 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry kind="lib" path="libs/soutils-android-beta-snapshot.jar"/>
-	<classpathentry kind="lib" path="libs/soutils-common-beta-snapshot.jar"/>
+	<classpathentry kind="lib" path="libs/Soutils-1.0-BETA-SNAPSHOT.jar" sourcepath="libs/Soutils-1.0-BETA-SNAPSHOT-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Sammelbox-Android/libs/Soutils-1.0-BETA-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

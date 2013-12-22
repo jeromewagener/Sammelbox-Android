@@ -1,8 +1,9 @@
 package org.sammelbox.android.controller.sync;
 
-import com.jeromewagener.soutils.android.beaconing.BeaconReceiver;
-import com.jeromewagener.soutils.android.networking.Communication;
+import com.jeromewagener.soutils.beaconing.BeaconReceiver;
+import com.jeromewagener.soutils.communication.Communication;
 import com.jeromewagener.soutils.filetransfer.FileTransferClient;
+import com.jeromewagener.soutils.messaging.SoutilsObserver;
 
 public class SyncServiceClientImpl implements SyncServiceClient {
 	private BeaconReceiver beaconReceiver = null;
@@ -10,9 +11,9 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	private Communication communication = null;
 	
 	@Override
-	public void startListeningForHashedSyncCodeBeacons(SynchronizationMessageHandler synchronizationMessageHandler) {
+	public void startListeningForHashedSyncCodeBeacons(SoutilsObserver soutilsObserver) {
 		if (beaconReceiver == null) {
-			beaconReceiver = new BeaconReceiver(synchronizationMessageHandler);
+			beaconReceiver = new BeaconReceiver(5454, soutilsObserver); // TODO define port
 			beaconReceiver.start();
 		}
 	}
@@ -26,9 +27,9 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	}
 
 	@Override
-	public void startCommunicationChannel(String hostIpAddress, SynchronizationMessageHandler handler) {
+	public void startCommunicationChannel(String hostIpAddress, SoutilsObserver soutilsObserver) {
 		if (communication == null) {
-			communication = new Communication(hostIpAddress, 12345, handler); // TODO define port
+			communication = new Communication(hostIpAddress, 12345, soutilsObserver); // TODO define port
 			communication.start();
 		} else {
 			//TODO
@@ -51,9 +52,9 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	}
 
 	@Override
-	public void openFileTransferClient(String storageLocationAsAbsolutPath, String ipAddress) {
+	public void openFileTransferClient(String storageLocationAsAbsolutPath, String ipAddress, SoutilsObserver soutilsObserver, long numberOfBytesToBeTransferred) {
 		if (fileTransferClient == null) {
-			fileTransferClient = new FileTransferClient(storageLocationAsAbsolutPath, ipAddress);
+			fileTransferClient = new FileTransferClient(storageLocationAsAbsolutPath, ipAddress, 6565, soutilsObserver, numberOfBytesToBeTransferred); // TODO define port
 			fileTransferClient.start();
 		} else {
 			// TODO
@@ -62,7 +63,15 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	
 	@Override
 	public int getFileTransferProgressPercentage() {
-		return fileTransferClient.isDone() ? 1 : 0; // TODO return percentage
+		if (fileTransferClient == null) {
+			return -1;
+		}
+		
+		return fileTransferClient.getFileTransferPercentage();
+	}
+	
+	public boolean isFileTransferFinished() {
+		return fileTransferClient == null ? true : fileTransferClient.isDone();
 	}
 	
 	@Override

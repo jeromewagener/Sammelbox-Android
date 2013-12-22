@@ -1,8 +1,8 @@
 package org.sammelbox.android.view.activity;
 
 import org.sammelbox.R;
+import org.sammelbox.android.controller.sync.SyncObserver;
 import org.sammelbox.android.controller.sync.SyncServiceClient;
-import org.sammelbox.android.controller.sync.SynchronizationMessageHandler;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ import android.widget.TextView;
 public class SynchronizationActivity extends Activity {
 
 	private SyncServiceClient syncServiceClient = SyncServiceClient.Default.getDefaultInstance();
-	private SynchronizationMessageHandler synchronizationMessageHandler = new SynchronizationMessageHandler(this, syncServiceClient);
+	private SyncObserver syncObserver = new SyncObserver(syncServiceClient, this);
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class SynchronizationActivity extends Activity {
 				syncButton.setEnabled(false);
 				cancelSyncButton.setEnabled(true);
 				
-				syncServiceClient.startListeningForHashedSyncCodeBeacons(synchronizationMessageHandler);
+				syncServiceClient.startListeningForHashedSyncCodeBeacons(syncObserver);
 				
 				TextView syncInstructions = (TextView) findViewById(R.id.lblSynchronizationInstructions);
 				syncInstructions.setText(R.string.search_for_sync_partner);
