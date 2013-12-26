@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import org.sammelbox.R;
 import org.sammelbox.android.controller.FileSystemAccessWrapper;
 import org.sammelbox.android.controller.FileSystemLocations;
+import org.sammelbox.android.controller.GlobalParameters;
 import org.sammelbox.android.view.activity.SynchronizationActivity;
 
 import android.app.AlertDialog;
@@ -24,6 +25,8 @@ import com.jeromewagener.soutils.messaging.SoutilsObserver;
 import com.jeromewagener.soutils.utilities.Soutilities;
 
 public class SyncObserver implements SoutilsObserver {
+	private static final long UPDATE_INTERVAL_IN_MS = 200;
+	
 	private SynchronizationActivity synchronizationActivity;
 	private SyncServiceClient syncServiceClient;
 	private boolean identificationInputBoxShown = false;
@@ -37,7 +40,7 @@ public class SyncObserver implements SoutilsObserver {
 		final String messageContent = soutilsMessage.getContent();
 		final String senderAddress = soutilsMessage.getSenderAddress();
 		
-		Log.i("Sammelbox-Android", 
+		Log.i(GlobalParameters.LOG_TAG, 
 			  soutilsMessage.getMessageType() + ":" + soutilsMessage.getContent() + ":" + soutilsMessage.getSenderAddress(), 
 			  soutilsMessage.getThrowable());
 		
@@ -67,9 +70,9 @@ public class SyncObserver implements SoutilsObserver {
 			    }
 			});
 			
-			while (syncServiceClient.getFileTransferProgressPercentage() < 100) {  //TODO
+			while (!syncServiceClient.isFileTransferFinished()) {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(UPDATE_INTERVAL_IN_MS);
 					
 					synchronizationActivity.runOnUiThread(new Runnable(){
 					    @Override
@@ -78,15 +81,13 @@ public class SyncObserver implements SoutilsObserver {
 					    		transferProgress.setProgress(syncServiceClient.getFileTransferProgressPercentage());
 							}
 						});
-				} catch (InterruptedException e) {
-					// TODO avoid busy waiting. log exception
-					e.printStackTrace();
+				} catch (InterruptedException interruptedException) {
+					Log.e(GlobalParameters.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
 				}
 			}
 
 		} else if (messageContent.equals("sammelbox-desktop:transfer-finished")) {
 			FileSystemAccessWrapper.unzipFileToFolder(FileSystemLocations.SAMMELBOX_HOME + "sync.zip", FileSystemLocations.SAMMELBOX_HOME);
-
 			synchronizationActivity.runOnUiThread(new Runnable(){
 			    @Override
 			    public void run() {
@@ -96,18 +97,15 @@ public class SyncObserver implements SoutilsObserver {
 			});
 			
 			syncServiceClient.stopCommunicationChannel();
-			
-			while (!syncServiceClient.isFileTransferFinished()) { // TODO nullify file transfer client
+			while (!syncServiceClient.isFileTransferFinished()) {
 				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					// TODO avoid busy waiting. log exception
-					e.printStackTrace();
+					Thread.sleep(UPDATE_INTERVAL_IN_MS);
+				} catch (InterruptedException interruptedException) {
+					Log.e(GlobalParameters.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
 				}
 			}
 			
 			syncServiceClient.stopFileTransferClient();
-
 			synchronizationActivity.runOnUiThread(new Runnable(){
 			    @Override
 			    public void run() {
@@ -117,7 +115,7 @@ public class SyncObserver implements SoutilsObserver {
 			});
 		}
 	}
-
+	
 	private void showSyncCodeInputDialogAndConnectIfCodeIsValid(final String senderIpAddress, final String receivedMessage) {
 		AlertDialog.Builder syncCodeInputAlertDialog = new AlertDialog.Builder(synchronizationActivity);
 
@@ -136,7 +134,7 @@ public class SyncObserver implements SoutilsObserver {
 				try {
 					md5HashedSyncCode = Soutilities.stringToMD5(value);
 				} catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-					Log.e("Sammelbox-Android", "Cannot compute hash", noSuchAlgorithmException);
+					Log.e(GlobalParameters.LOG_TAG, "Cannot compute hash", noSuchAlgorithmException);
 				}
 				
 				if (md5HashedSyncCode.equals(receivedMessage.split(":")[2])) {

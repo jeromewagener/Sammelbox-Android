@@ -1,5 +1,7 @@
 package org.sammelbox.android.controller.sync;
 
+import org.sammelbox.android.controller.GlobalParameters;
+
 import com.jeromewagener.soutils.beaconing.BeaconReceiver;
 import com.jeromewagener.soutils.communication.Communication;
 import com.jeromewagener.soutils.filetransfer.FileTransferClient;
@@ -13,7 +15,7 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	@Override
 	public void startListeningForHashedSyncCodeBeacons(SoutilsObserver soutilsObserver) {
 		if (beaconReceiver == null) {
-			beaconReceiver = new BeaconReceiver(5454, soutilsObserver); // TODO define port
+			beaconReceiver = new BeaconReceiver(GlobalParameters.BEACON_PORT, soutilsObserver);
 			beaconReceiver.start();
 		}
 	}
@@ -29,10 +31,8 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	@Override
 	public void startCommunicationChannel(String hostIpAddress, SoutilsObserver soutilsObserver) {
 		if (communication == null) {
-			communication = new Communication(hostIpAddress, 12345, soutilsObserver); // TODO define port
+			communication = new Communication(hostIpAddress, GlobalParameters.COMMUNICATION_PORT, soutilsObserver);
 			communication.start();
-		} else {
-			//TODO
 		}
 	}
 
@@ -52,24 +52,21 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	}
 
 	@Override
-	public void openFileTransferClient(String storageLocationAsAbsolutPath, String ipAddress, SoutilsObserver soutilsObserver, long numberOfBytesToBeTransferred) {
+	public void openFileTransferClient(
+			String storageLocationAsAbsolutPath, String ipAddress, SoutilsObserver soutilsObserver, long numberOfBytesToBeTransferred) {
 		if (fileTransferClient == null) {
-			fileTransferClient = new FileTransferClient(storageLocationAsAbsolutPath, ipAddress, 6565, soutilsObserver, numberOfBytesToBeTransferred); // TODO define port
+			fileTransferClient = new FileTransferClient(
+					storageLocationAsAbsolutPath, ipAddress, GlobalParameters.FILE_TRANSFER_PORT, soutilsObserver, numberOfBytesToBeTransferred);
 			fileTransferClient.start();
-		} else {
-			// TODO
 		}
 	}
 	
 	@Override
-	public int getFileTransferProgressPercentage() {
-		if (fileTransferClient == null) {
-			return -1;
-		}
-		
+	public int getFileTransferProgressPercentage() {		
 		return fileTransferClient.getFileTransferPercentage();
 	}
 	
+	@Override
 	public boolean isFileTransferFinished() {
 		return fileTransferClient == null ? true : fileTransferClient.isDone();
 	}
