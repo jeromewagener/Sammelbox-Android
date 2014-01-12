@@ -12,7 +12,6 @@ import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
 import org.sammelbox.android.model.querybuilder.QueryComponent;
-import org.sammelbox.android.view.adapter.SearchCriteriaListAdapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,17 +20,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -132,15 +130,7 @@ public class SearchActivity extends Activity {
 					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
 					lblSearchCriteria.setVisibility(View.VISIBLE);
 					
-					ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
-					listSearchCriteria.setVisibility(View.VISIBLE);				
-					SearchCriteriaListAdapter adapter = new SearchCriteriaListAdapter(SearchActivity.this, queryComponents);
-					listSearchCriteria.setAdapter(adapter);
-					
-					TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
-					lblSelectCriteriaConnector.setVisibility(View.VISIBLE);
-					RadioGroup radioSearchAndOrConnector = (RadioGroup) findViewById(R.id.radioSearchAndOrConnector);
-					radioSearchAndOrConnector.setVisibility(View.VISIBLE);
+					updateQueryComponentList();
 										
 					return true;
 				} else {
@@ -149,33 +139,45 @@ public class SearchActivity extends Activity {
 				
 			}
 		});
-		
-		ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
-		listSearchCriteria.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				queryComponents.remove(position);
-				
-				ListView listSearchCriteria = (ListView) findViewById(R.id.listSearchCriteria);
-				SearchCriteriaListAdapter adapter = new SearchCriteriaListAdapter(SearchActivity.this, queryComponents);
-				listSearchCriteria.setAdapter(adapter);
-				
-				if (queryComponents.isEmpty()) {
-					listSearchCriteria.setVisibility(View.GONE);		
-					
-					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
-					lblSearchCriteria.setVisibility(View.GONE);
-
-					TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
-					lblSelectCriteriaConnector.setVisibility(View.GONE);
-					RadioGroup radioSearchAndOrConnector = (RadioGroup) findViewById(R.id.radioSearchAndOrConnector);
-					radioSearchAndOrConnector.setVisibility(View.GONE);
-				}
-			}
-		});
 	}
-
+	
+	private void updateQueryComponentList() {
+		LinearLayout layoutListSearchCriteria = (LinearLayout) findViewById(R.id.layoutListSearchCriteria);
+		layoutListSearchCriteria.setVisibility(View.VISIBLE);	
+		layoutListSearchCriteria.removeAllViews();
+		
+		for (QueryComponent queryComponent : queryComponents) {
+			final TextView queryComponentTextView = new TextView(SearchActivity.this);
+			queryComponentTextView.setText(getQueryComponentString(queryComponent));
+			queryComponentTextView.setTextSize(14);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			params.setMargins(5, 5, 15, 5);
+			queryComponentTextView.setLayoutParams(params);
+			queryComponentTextView.setPadding(5, 5, 5, 5);
+			queryComponentTextView.setCompoundDrawablePadding(10);
+			
+			queryComponentTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.remove), null);
+			queryComponentTextView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					for (QueryComponent queryComponent : queryComponents) {
+						if (getQueryComponentString(queryComponent).equals(queryComponentTextView.getText().toString())) {
+							queryComponents.remove(queryComponent);
+							break;
+						}
+					}
+					updateQueryComponentList();
+				}
+			});
+			layoutListSearchCriteria.addView(queryComponentTextView);
+		}
+	}
+	
+	private String getQueryComponentString(QueryComponent queryComponent) {
+		return queryComponent.getFieldName() + " " + queryComponent.getOperator().toSqlOperator() + " " + queryComponent.getValue();
+	}
+		
 	private void updateAlbumItemFieldSelectionSpinner(Map<String, String> albumNameToTableNameMapping, String albumTable) {
 		Map<String, FieldType> fieldNameToTypeMapping = DatabaseQueryOperation.retrieveFieldnameToFieldTypeMapping(
 				DatabaseWrapper.getSQLiteDatabaseInstance(this), this, albumTable);

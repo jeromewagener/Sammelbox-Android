@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:weightSum="100" >
 
     <TextView
         android:id="@+id/lblAlbums"
@@ -13,7 +14,9 @@
     <ListView
         android:id="@+id/listAlbums"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_weight="50"
+        android:fadeScrollbars="false" >
     </ListView>
 
     <TextView
@@ -24,7 +27,9 @@
     <ListView
         android:id="@+id/listSavedSearches"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_weight="30"
+        android:fadeScrollbars="false" >
     </ListView>
 
 </LinearLayout>
