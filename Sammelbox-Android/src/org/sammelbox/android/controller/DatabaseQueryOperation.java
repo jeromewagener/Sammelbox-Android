@@ -17,6 +17,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 public class DatabaseQueryOperation {
+	private static final int MAX_NUMBER_OF_STARS = 5;
+
 	public static Map<String, String> getAlbumNamesToAlbumTablesMapping(Context context) {
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
 				DatabaseWrapper.getSQLiteDatabaseInstance(context), "select * from album_master_table");
@@ -143,7 +145,17 @@ public class DatabaseQueryOperation {
 		} else if (fieldNamesToTypes.get(fieldName).equals(FieldType.OPTION)) {
 			return cursor.getString(cursor.getColumnIndex(fieldName));
 		} else if (fieldNamesToTypes.get(fieldName).equals(FieldType.STAR_RATING)) {
-			return String.valueOf(cursor.getInt(cursor.getColumnIndex(fieldName)));
+			int numberOfStars = cursor.getInt(cursor.getColumnIndex(fieldName));
+			StringBuffer stringBuffer = new StringBuffer();
+			for (int i=0; i<MAX_NUMBER_OF_STARS; i++) {
+				if (i < numberOfStars) {
+					stringBuffer.append("\u2605");
+				} else {
+					stringBuffer.append("\u2606");
+				}
+			}
+			
+			return stringBuffer.toString(); 
 		} else if (fieldNamesToTypes.get(fieldName).equals(FieldType.URL)) {
 			return cursor.getString(cursor.getColumnIndex(fieldName));
 		}

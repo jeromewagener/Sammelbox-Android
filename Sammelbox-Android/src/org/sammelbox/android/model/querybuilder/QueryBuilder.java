@@ -20,8 +20,8 @@ public final class QueryBuilder {
     static {
         Map<String, String> mySearchToSQLOperators = new HashMap<String, String>();
 
-        mySearchToSQLOperators.put("equal", QueryOperator.EQUALS.toSqlOperator());
-        mySearchToSQLOperators.put("not equal", QueryOperator.NOT_EQUALS.toSqlOperator());
+        mySearchToSQLOperators.put("equals", QueryOperator.EQUALS.toSqlOperator());
+        mySearchToSQLOperators.put("not equals", QueryOperator.NOT_EQUALS.toSqlOperator());
         mySearchToSQLOperators.put("contains", QueryOperator.CONTAINS.toSqlOperator());
         mySearchToSQLOperators.put("smaller or equal to", QueryOperator.SMALLER_OR_EQUAL.toSqlOperator());
         mySearchToSQLOperators.put("smaller than", QueryOperator.SMALLER.toSqlOperator());
@@ -43,9 +43,9 @@ public final class QueryBuilder {
 	 * @return a string array containing all natural language operators suited for text queries */
 	public static String[] toTextOperatorStringArray() {
 		return new String[] { 	
-			"equal",
-			"not equal",
-			"contains"
+			"contains",
+			"equals",
+			"not equal"
 		};
 	}
 		
@@ -53,7 +53,7 @@ public final class QueryBuilder {
 	 * @return a string array containing all natural language operators suited for number queries */
 	public static String[] toNumberOperatorStringArray() {
 		return new String[] {
-			"equal",
+			"equals",
 			"smaller than",
 			"smaller or equal to",
 			"bigger than",
@@ -65,7 +65,7 @@ public final class QueryBuilder {
 	 * @return an string array containing all operators suited for date queries */
 	public static String[] toDateOperatorStringArray() {			
 		return new String[] {
-			"equal",
+			"equals",
 			"before",
 			"before or equal to",
 			"after or equal to",
@@ -77,7 +77,7 @@ public final class QueryBuilder {
 	 * @return an string array containing all operators suited for yes/no queries */
 	public static String[] toYesNoOperatorStringArray() {
 		return new String[] { 	
-				"equal"
+				"equals"
 		};
 	}
 		

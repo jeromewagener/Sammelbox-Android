@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -45,7 +46,10 @@ public class SearchActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		
-		
+		initializeUI();
+	}
+	
+	private void initializeUI() {
 		final Spinner comboSelectAlbum = (Spinner) findViewById(R.id.comboSelectAlbum);		
 		final Map<String, String> albumNameToTableNameMapping = GlobalState.getAlbumNameToTableName(this);
 		
@@ -58,8 +62,17 @@ public class SearchActivity extends Activity {
 		comboSelectAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				queryComponents.clear();
+				
 				updateAlbumItemFieldSelectionSpinner(albumNameToTableNameMapping,
 						albumNameToTableNameMapping.get((String) comboSelectAlbum.getSelectedItem()));
+				
+				updateQueryComponentList(queryComponents);
+				
+				EditText edtSearchValue = ((EditText) findViewById(R.id.edtSearchValue));
+				edtSearchValue.setText("");
+				
+				setQueryComponentUIVisibility(View.GONE);
 			}
 
 			@Override
@@ -109,6 +122,9 @@ public class SearchActivity extends Activity {
 					
 					Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
 	                startActivity(openAlbumItemListToBrowse);
+	                
+	                setQueryComponentUIVisibility(View.VISIBLE);
+	                updateQueryComponentList(queryComponents);
 				}
 				
 				return true;
@@ -125,13 +141,10 @@ public class SearchActivity extends Activity {
 						edtSearchValue.requestFocus();
 					}
 					
-					queryComponents.add(getQueryComponentFromView());
+					queryComponents.add(getQueryComponentFromView());					
+					updateQueryComponentList(queryComponents);
+					setQueryComponentUIVisibility(View.VISIBLE);
 					
-					TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
-					lblSearchCriteria.setVisibility(View.VISIBLE);
-					
-					updateQueryComponentList();
-										
 					return true;
 				} else {
 					return false;
@@ -141,7 +154,7 @@ public class SearchActivity extends Activity {
 		});
 	}
 	
-	private void updateQueryComponentList() {
+	private void updateQueryComponentList(final List<QueryComponent> queryComponents) {
 		LinearLayout layoutListSearchCriteria = (LinearLayout) findViewById(R.id.layoutListSearchCriteria);
 		layoutListSearchCriteria.setVisibility(View.VISIBLE);	
 		layoutListSearchCriteria.removeAllViews();
@@ -149,7 +162,7 @@ public class SearchActivity extends Activity {
 		for (QueryComponent queryComponent : queryComponents) {
 			final TextView queryComponentTextView = new TextView(SearchActivity.this);
 			queryComponentTextView.setText(getQueryComponentString(queryComponent));
-			queryComponentTextView.setTextSize(14);
+			queryComponentTextView.setTextSize(16);
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 			params.setMargins(5, 5, 15, 5);
@@ -167,7 +180,11 @@ public class SearchActivity extends Activity {
 							break;
 						}
 					}
-					updateQueryComponentList();
+					updateQueryComponentList(queryComponents);
+					
+					if (queryComponents.isEmpty()) {
+						setQueryComponentUIVisibility(View.GONE);
+					}
 				}
 			});
 			layoutListSearchCriteria.addView(queryComponentTextView);
@@ -224,4 +241,12 @@ public class SearchActivity extends Activity {
 		return true;
 	}
 
+	private void setQueryComponentUIVisibility(int visibility) {
+		TextView lblSearchCriteria = (TextView) findViewById(R.id.lblSearchCriteria);
+		lblSearchCriteria.setVisibility(visibility);
+		TextView lblSelectCriteriaConnector = (TextView) findViewById(R.id.lblSelectCriteriaConnector);
+		lblSelectCriteriaConnector.setVisibility(visibility);
+		RadioGroup radioSearchAndOrConnector  = (RadioGroup) findViewById(R.id.radioSearchAndOrConnector);
+		radioSearchAndOrConnector.setVisibility(visibility);
+	}
 }
