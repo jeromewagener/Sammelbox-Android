@@ -15,8 +15,13 @@
     <string name="synchronization">Synchronization</string>
     <string name="search">Search</string>
     <string name="help">Help</string>
-    <string name="help_info">Please select a help topic from below. Please note that you will need
-	    to first synchronize with a desktop computer before using Sammelbox on your Android device!</string>
+    <string name="help_info">Sammelbox-Android is a mobile app that allows you to carry your Sammelbox collections 
+        with you at any time.\r\n\r\nThese Sammelbox collections can be created using the free and open-source Sammelbox 
+        application available for Windows, Linux and MacOS. What makes Sammelbox different is its easy of use, combined with 
+        limitless possibilities to define your custom collections. Including everything from post cards to DVDs. 
+        In fact, you define your collection using only those attributes you like.\r\n\r\nFurthermore, using the 
+        inbuild synchronization, your collections are immediately accessible on your Android device and you are ready 
+        to go!\r\n\r\nPlease visit www.Sammelbox.org for a video introduction of Sammelbox, download links and much more.</string>
     <string name="select_album">Select an album:</string>
     <string name="select_album_field">Select an album item field:</string>
     <string name="select_operator">Select an operator:</string>

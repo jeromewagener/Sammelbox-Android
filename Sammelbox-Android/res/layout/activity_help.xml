@@ -14,9 +14,11 @@
             android:text="@string/help" />
 
         <TextView
+            style="@style/sammelboxAndroidText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/help_info" />
+            android:text="@string/help_info"
+            android:autoLink="web" />
     </LinearLayout>
 
 </ScrollView>
