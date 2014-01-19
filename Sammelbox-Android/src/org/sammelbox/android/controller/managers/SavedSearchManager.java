@@ -41,20 +41,20 @@ public final class SavedSearchManager {
 	
 	/** Initializes saved searches without notifying any attached observers */
 	public static void initialize(Context context) {
-		SavedSearchManager.loadViews(context);
+		SavedSearchManager.loadSavedSearches(context);
 	}
 	
 	/** Returns the complete list of saved searches names for all available albums */
 	public static List<String> getSavedSearchesNames() {
-		List<String> allViewNames = new LinkedList<String>();
+		List<String> allSavedSearchesNames = new LinkedList<String>();
 		
 		for (String albumName : albumNamesToSavedSearches.keySet()) {
-			for (SavedSearch albumView : albumNamesToSavedSearches.get(albumName)) {
-				allViewNames.add(albumView.name);
+			for (SavedSearch savedSearch : albumNamesToSavedSearches.get(albumName)) {
+				allSavedSearchesNames.add(savedSearch.name);
 			}
 		}
 		
-		return allViewNames;
+		return allSavedSearchesNames;
 	}
 	
 	/** Returns the list of saved searches for a specific album */
@@ -69,62 +69,18 @@ public final class SavedSearchManager {
 	}
 	
 	public static String[] getSavedSearchesNamesArray(String albumName) {
-		List<SavedSearch> albumViews = getSavedSearches(albumName);
+		List<SavedSearch> savedSearches = getSavedSearches(albumName);
 		
-		String[] albumViewNames = new String[albumViews.size()];
+		String[] savedSearchesNamesArray = new String[savedSearches.size()];
 		
-		for (int i=0; i<albumViews.size(); i++) {
-			albumViewNames[i] = albumViews.get(i).getName();
+		for (int i=0; i<savedSearches.size(); i++) {
+			savedSearchesNamesArray[i] = savedSearches.get(i).getName();
 		}
 		
-		return albumViewNames;
+		return savedSearchesNamesArray;
 	}
 	
-	public static void addSavedSearch(String name, String album, List<QueryComponent> queryComponents, boolean connectByAnd) {
-		addSavedSearch(name, album, null, true, queryComponents, connectByAnd);
-	}
-	
-	public static void addSavedSearch(String name, String album, String orderByField, boolean orderAscending, 
-			List<QueryComponent> queryComponents, boolean connectByAnd) {
-		if (albumNamesToSavedSearches.get(album) == null) {
-			List<SavedSearch> albumViews = new LinkedList<SavedSearch>();
-			albumViews.add(new SavedSearch(name, album, orderByField, orderAscending, queryComponents, connectByAnd));
-			albumNamesToSavedSearches.put(album, albumViews);
-		} else {
-			List<SavedSearch> albumViews = albumNamesToSavedSearches.get(album);
-			albumViews.add(new SavedSearch(name, album, orderByField, orderAscending, queryComponents, connectByAnd));
-			albumNamesToSavedSearches.put(album, albumViews);
-		}
-	}
-	
-	public static void removeSavedSearch(String albumName, String viewName) {
-		List<SavedSearch> albumViews = albumNamesToSavedSearches.get(albumName);
-		
-		for (SavedSearch albumView : albumViews) {
-			if (albumView.getName().equals(viewName)) {
-				albumViews.remove(albumView);
-				break;
-			}
-		}
-	}
-	
-	public static boolean isNameAlreadyUsed(String albumName, String viewName) {
-		List<SavedSearch> albumViews = albumNamesToSavedSearches.get(albumName);
-		
-		if (albumViews == null) {
-			return false;
-		}
-		
-		for (SavedSearch albumView : albumViews) {
-			if (albumView.name.equals(viewName)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private static void loadViews(Context context) {
+	private static void loadSavedSearches(Context context) {
 		albumNamesToSavedSearches = XmlStorageWrapper.retrieveSavedSearches();
 		
 		for (String albumName : albumNamesToSavedSearches.keySet()) {
@@ -271,11 +227,11 @@ public final class SavedSearchManager {
 	}
 	
 	public static boolean hasAlbumSavedSearches(String albumName) {
-		List<SavedSearch> albumViews = albumNamesToSavedSearches.get(albumName);
+		List<SavedSearch> savedSearches = albumNamesToSavedSearches.get(albumName);
 		
-		if (albumViews != null) {
-			for (SavedSearch albumView : albumViews) {
-				if (albumView.getAlbum().equals(albumName)) {
+		if (savedSearches != null) {
+			for (SavedSearch savedSearch : savedSearches) {
+				if (savedSearch.getAlbum().equals(albumName)) {
 					return true;
 				}
 			}

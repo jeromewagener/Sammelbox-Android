@@ -79,15 +79,15 @@ public final class XmlStorageWrapper {
 			if (!root.getNodeName().equals("savedSearches")) {
 				throw new XmlParsingException("Invalid Saved Searches File");
 			} else {
-				NodeList viewNodes = document.getElementsByTagName("savedSearch");
+				NodeList savedSearchNodes = document.getElementsByTagName("savedSearch");
 				
 				String name = "";
 				String album = "";
 				String orderByField = "";
 				String orderAscending = "";
 				
-				for (int i = 0; i < viewNodes.getLength(); i++) {
-					Node node = viewNodes.item(i);
+				for (int i = 0; i < savedSearchNodes.getLength(); i++) {
+					Node node = savedSearchNodes.item(i);
 
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
 						Element element = (Element) node;
@@ -113,13 +113,13 @@ public final class XmlStorageWrapper {
 						}
 						
 						if (albumNamesToSavedSearches.get(album) == null) {
-							List<SavedSearch> albumViews = new LinkedList<SavedSearch>();
-							albumViews.add(new SavedSearch(name, album, orderByField, Boolean.valueOf(orderAscending), queryComponents, Boolean.valueOf(connectedByAnd)));
-							albumNamesToSavedSearches.put(album, albumViews);
+							List<SavedSearch> savedSearches = new LinkedList<SavedSearch>();
+							savedSearches.add(new SavedSearch(name, album, orderByField, Boolean.valueOf(orderAscending), queryComponents, Boolean.valueOf(connectedByAnd)));
+							albumNamesToSavedSearches.put(album, savedSearches);
 						} else {
-							List<SavedSearch> albumViews = albumNamesToSavedSearches.get(album);
-							albumViews.add(new SavedSearch(name, album, orderByField, Boolean.valueOf(orderAscending), queryComponents, Boolean.valueOf(connectedByAnd)));
-							albumNamesToSavedSearches.put(album, albumViews);
+							List<SavedSearch> savedSearches = albumNamesToSavedSearches.get(album);
+							savedSearches.add(new SavedSearch(name, album, orderByField, Boolean.valueOf(orderAscending), queryComponents, Boolean.valueOf(connectedByAnd)));
+							albumNamesToSavedSearches.put(album, savedSearches);
 						}
 					}
 				}
