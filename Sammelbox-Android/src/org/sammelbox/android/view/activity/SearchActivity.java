@@ -11,6 +11,7 @@ import org.sammelbox.android.controller.DatabaseQueryOperation;
 import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
+import org.sammelbox.android.model.querybuilder.QueryBuilderException;
 import org.sammelbox.android.model.querybuilder.QueryComponent;
 
 import android.app.Activity;
@@ -109,22 +110,27 @@ public class SearchActivity extends Activity {
 					}
 					
 					RadioButton radioConnectByAnd = (RadioButton) findViewById(R.id.radioConnectByAnd);
-					String rawSqlQuery = QueryBuilder.buildQuery(
+					try {
+						String rawSqlQuery = QueryBuilder.buildQuery(
 							queryComponents, radioConnectByAnd.isChecked(), 
 							(String) comboSelectAlbum.getSelectedItem(), SearchActivity.this);
 					
-					// clear value to search
-					((EditText) findViewById(R.id.edtSearchValue)).getText().clear();
-					
-					GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
-					GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
-							DatabaseWrapper.executeRawSQLQuery(DatabaseWrapper.getSQLiteDatabaseInstance(SearchActivity.this), rawSqlQuery)));
-					
-					Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
-	                startActivity(openAlbumItemListToBrowse);
+						// clear value to search
+						((EditText) findViewById(R.id.edtSearchValue)).getText().clear();
+						
+						GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
+						GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
+								DatabaseWrapper.executeRawSQLQuery(DatabaseWrapper.getSQLiteDatabaseInstance(SearchActivity.this), rawSqlQuery)));
+						
+						Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
+		                startActivity(openAlbumItemListToBrowse);
+		                
+		                setQueryComponentUIVisibility(View.VISIBLE);
+		                updateQueryComponentList(queryComponents);
 	                
-	                setQueryComponentUIVisibility(View.VISIBLE);
-	                updateQueryComponentList(queryComponents);
+					} catch (QueryBuilderException queryBuilderException) {
+						// TODO show message
+					}
 				}
 				
 				return true;

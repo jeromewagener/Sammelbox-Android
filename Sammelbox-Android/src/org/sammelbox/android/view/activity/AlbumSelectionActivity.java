@@ -1,11 +1,16 @@
 package org.sammelbox.android.view.activity;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.sammelbox.R;
 import org.sammelbox.android.GlobalState;
 import org.sammelbox.android.controller.DatabaseQueryOperation;
+import org.sammelbox.android.controller.DatabaseWrapper;
+import org.sammelbox.android.controller.managers.SavedSearchManager;
+import org.sammelbox.android.controller.managers.SavedSearchManager.SavedSearch;
+import org.sammelbox.android.model.querybuilder.QueryBuilderException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,7 +33,7 @@ public class AlbumSelectionActivity extends Activity {
 		
 		final Map<String,String> albumNameToTableName = GlobalState.getAlbumNameToTableName(this);
 		final String[] albumNames = Arrays.copyOf(albumNameToTableName.keySet().toArray(), albumNameToTableName.keySet().toArray().length, String[].class);
-		
+			
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albumNames);
 		ListView albumList = (ListView)findViewById(R.id.listAlbums);
 		albumList.setAdapter(adapter);
@@ -36,8 +41,38 @@ public class AlbumSelectionActivity extends Activity {
 		albumList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
 				GlobalState.setSelectedAlbum(albumNames[position]);
-				GlobalState.setAlbumNameToTableName(albumNameToTableName);
 				GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAllAlbumItemsFromAlbum(AlbumSelectionActivity.this));
+				
+				Intent openAlbumItemListToBrowse = new Intent(AlbumSelectionActivity.this, AlbumItemBrowserActivity.class);
+                startActivity(openAlbumItemListToBrowse);
+            }
+        });
+		
+		SavedSearchManager.initialize(this);
+		final List<String> savedSearchesNames = SavedSearchManager.getSavedSearchesNames();
+		String[] savedSearchesNamesArray = new String[savedSearchesNames.size()];
+	    savedSearchesNamesArray = savedSearchesNames.toArray(savedSearchesNamesArray);
+	    
+	    ArrayAdapter<String> savedSearchesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, savedSearchesNamesArray);
+		ListView savedSearchesList = (ListView)findViewById(R.id.listSavedSearches);
+		savedSearchesList.setAdapter(savedSearchesAdapter);
+		
+		savedSearchesList.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {				
+				SavedSearch savedSearch = SavedSearchManager.getSavedSearchByName(savedSearchesNames.get(position));
+				GlobalState.setSelectedAlbum(savedSearch.getAlbum());
+								
+				try {
+					GlobalState.setSimplifiedAlbumItemResultSet(
+							DatabaseQueryOperation.getAlbumItems(AlbumSelectionActivity.this, 
+									DatabaseWrapper.executeRawSQLQuery(
+											DatabaseWrapper.getSQLiteDatabaseInstance(
+													AlbumSelectionActivity.this),
+													savedSearch.getSQLQueryString(AlbumSelectionActivity.this))));
+				} catch (QueryBuilderException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				Intent openAlbumItemListToBrowse = new Intent(AlbumSelectionActivity.this, AlbumItemBrowserActivity.class);
                 startActivity(openAlbumItemListToBrowse);

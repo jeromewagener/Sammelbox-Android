@@ -1,6 +1,23 @@
+/** -----------------------------------------------------------------
+ *    Sammelbox-Android - A mobile companion app for Sammelbox
+ *    Copyright (C) 2013 Jerome Wagener
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ** ----------------------------------------------------------------- */
+
 package org.sammelbox.android.model.querybuilder;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +32,7 @@ import android.content.Context;
 public final class QueryBuilder {
 	/** A private default constructor to forbid the creation of multiple instances */
 	private QueryBuilder() {}
-	
+    
 	private static final Map<String, String> SEARCH_TO_SQL_OPERATORS;
     static {
         Map<String, String> mySearchToSQLOperators = new HashMap<String, String>();
@@ -35,6 +52,16 @@ public final class QueryBuilder {
         SEARCH_TO_SQL_OPERATORS = Collections.unmodifiableMap(mySearchToSQLOperators);
     }
 	
+    public static String getHumanReadableQueryOperator(QueryOperator queryOperator) {
+    	for (Map.Entry<String, String> searchToSqlOperator : SEARCH_TO_SQL_OPERATORS.entrySet()) {
+    		if (searchToSqlOperator.getValue().equals(queryOperator.toSqlOperator())) {
+    			return searchToSqlOperator.getKey();
+    		}
+    	}
+    	
+    	return "ERROR";
+    }
+    
     public static QueryOperator getQueryOperator(String searchOperator) {
     	return QueryOperator.valueOfSQL(SEARCH_TO_SQL_OPERATORS.get(searchOperator));
     }
@@ -52,7 +79,7 @@ public final class QueryBuilder {
 	/** Returns all natural language operators suited for number queries 
 	 * @return a string array containing all natural language operators suited for number queries */
 	public static String[] toNumberOperatorStringArray() {
-		return new String[] {
+		return new String[] { 	
 			"equals",
 			"smaller than",
 			"smaller or equal to",
@@ -64,7 +91,7 @@ public final class QueryBuilder {
 	/** Returns all operators suited for date queries 
 	 * @return an string array containing all operators suited for date queries */
 	public static String[] toDateOperatorStringArray() {			
-		return new String[] {
+		return new String[] { 	
 			"equals",
 			"before",
 			"before or equal to",
@@ -77,7 +104,7 @@ public final class QueryBuilder {
 	 * @return an string array containing all operators suited for yes/no queries */
 	public static String[] toYesNoOperatorStringArray() {
 		return new String[] { 	
-				"equals"
+			"equals"
 		};
 	}
 		
@@ -102,9 +129,10 @@ public final class QueryBuilder {
 	 * @param connectByAnd a boolean specifying whether the query components are connected by AND (connectedByAnd == true) 
 	 * 						or by OR (connectedByAnd == false). 
 	 * @param album the name of the album which should be queried. 
-	 * @return a valid SQL query as a string. By default a 'SELECT *' is performed on the field/column names. */
-	public static String buildQuery(List<QueryComponent> queryComponents, boolean connectByAnd, String album, Context context) {
-		return buildQuery(queryComponents, connectByAnd, album, null, false, context);
+	 * @return a valid SQL query as a string. By default a 'SELECT *' is performed on the field/column names. 
+	 * @throws QueryBuilderException */
+	public static String buildQuery(List<QueryComponent> queryComponents, boolean connectByAnd, String albumName, Context context) throws QueryBuilderException {
+		return buildQuery(queryComponents, connectByAnd, albumName, null, false, context);
 	}
 	
 	/** This method builds a SQL query string out of multiple query components 
@@ -114,8 +142,9 @@ public final class QueryBuilder {
 	 * @param albumName the name of the album which should be queried.
 	 * @param sortField the field upon which the results should be sorted. Can be null or empty if not needed
 	 * @param sortAscending only if a sortField is specified. In this case, true means that the results are sorted ascending, false means descending
-	 * @return a valid SQL query as a string. By default a 'SELECT *' is performed on the field/column names. */
-	public static String buildQuery(List<QueryComponent> queryComponents, boolean connectByAnd, String albumName, String sortField, boolean sortAscending, Context context) {
+	 * @return a valid SQL query as a string. By default a 'SELECT *' is performed on the field/column names. 
+	 * @throws QueryBuilderException */
+	public static String buildQuery(List<QueryComponent> queryComponents, boolean connectByAnd, String albumName, String sortField, boolean sortAscending, Context context) throws QueryBuilderException {
 		StringBuilder query = new StringBuilder();
 		query.append("SELECT * FROM " + DatabaseStringUtilities.encloseNameWithQuotes(DatabaseStringUtilities.generateTableName(albumName)));
 		
@@ -128,6 +157,12 @@ public final class QueryBuilder {
 						DatabaseWrapper.getSQLiteDatabaseInstance(context), context, DatabaseStringUtilities.generateTableName(albumName));
 			
 		for (int i=0; i<queryComponents.size(); i++) {	
+			if (fieldNameToFieldTypeMap.get(queryComponents.get(i).getFieldName()) == null) {
+				// TODO show message
+				/*throw new QueryBuilderException(Translator.toBeTranslated(
+						"The following field seems to cause problems: " + queryComponents.get(i).getFieldName() + " " +
+						"Is this a renamed or deleted field? If yes, please adapt the search using the edit functionality."));*/
+			}
 			
 			if (fieldNameToFieldTypeMap.get(queryComponents.get(i).getFieldName()).equals(FieldType.OPTION) ||
 					fieldNameToFieldTypeMap.get(queryComponents.get(i).getFieldName()).equals(FieldType.URL) ||
@@ -170,16 +205,6 @@ public final class QueryBuilder {
 		}
 		
 		return query.toString();
-	}
-	
-	/** This method builds a SQL query out of multiple query components and returns the resulting query string.
-	 * @param queryComponents a list of query components
-	 * @param connectByAnd a boolean specifying whether the query components are connected by AND (connectedByAnd == true) 
-	 * 						or by OR (connectedByAnd == false) 
-	 * @param album the name of the album which should be queried 
-	 * @return a valid SQL query as a string. By default a 'SELECT *' is performed on the field/column names */
-	public static String buildQueryString(ArrayList<QueryComponent> queryComponents, boolean connectByAnd, String album, Context context) {
-		return buildQuery(queryComponents, connectByAnd, album, null, false, context);
 	}
 	
 	/**

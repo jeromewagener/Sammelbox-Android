@@ -1,9 +1,12 @@
 package org.sammelbox.android.controller;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -56,5 +59,30 @@ public class FileSystemAccessWrapper {
 			ioe.printStackTrace(); // TODO
 		}
 
+	}
+	
+	/** Reads the specified file into a string
+	 * @param filePath the path to the file that should be read
+	 * @return the content of the specified file as a string or an empty string if the file does not exist */
+	public static String readFileAsString(String filePath) {
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return "";
+		}
+
+		byte[] buffer = new byte[(int) new File(filePath).length()];
+
+		try {
+			BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(filePath));
+			bufferedInputStream.read(buffer);
+			bufferedInputStream.close();
+
+			return new String(buffer, Charset.defaultCharset());
+		} catch (Exception e) {
+			// TODO log or message
+			//LOGGER.error("An error occured while reading the file (" + filePath + ") into a string", e);
+		}
+
+		return new String(buffer, Charset.defaultCharset());
 	}
 }
