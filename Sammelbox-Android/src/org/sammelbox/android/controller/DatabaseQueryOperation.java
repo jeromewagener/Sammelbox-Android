@@ -167,7 +167,7 @@ public class DatabaseQueryOperation {
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
 				DatabaseWrapper.getSQLiteDatabaseInstance(context),
 				"select * from " + albumTableName + "_pictures where album_item_foreign_key = ?", 
-				String.valueOf(GlobalState.getSelectedAlbumItemID()));
+				String.valueOf(albumItemID));
 
 		ArrayList<Drawable> galleryImages = new ArrayList<Drawable>();
 		
@@ -175,6 +175,28 @@ public class DatabaseQueryOperation {
 			while (cursor.isAfterLast() != true) {				
 				String thumbnailName = cursor.getString(cursor.getColumnIndex("thumbnail_picture_filename")); 
 				galleryImages.add(Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Sammelbox/thumbnails/" + thumbnailName));
+				
+				cursor.moveToNext();
+			}
+		}
+
+		cursor.close();
+		
+		return galleryImages;
+	}
+	
+	public static ArrayList<String> getPathsToFullImages(Context context, String albumName, String albumTableName, Long albumItemID) {
+		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
+				DatabaseWrapper.getSQLiteDatabaseInstance(context),
+				"select * from " + albumTableName + "_pictures where album_item_foreign_key = ?", 
+				String.valueOf(albumItemID));
+
+		ArrayList<String> galleryImages = new ArrayList<String>();
+		
+		if (cursor.moveToFirst()) {
+			while (cursor.isAfterLast() != true) {				
+				String originalName = cursor.getString(cursor.getColumnIndex("original_picture_filename")); 
+				galleryImages.add(Environment.getExternalStorageDirectory() + "/Sammelbox/album-pictures/" + albumName + "/" + originalName);
 				
 				cursor.moveToNext();
 			}
