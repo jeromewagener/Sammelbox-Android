@@ -1,4 +1,4 @@
-package org.sammelbox.android.controller;
+package org.sammelbox.android.controller.filesystem;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -10,6 +10,10 @@ import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.sammelbox.android.AppParams;
+
+import android.util.Log;
 
 public class FileSystemAccessWrapper {
 	private static final int ONE_KB_BUFFER_SIZE = 1024;
@@ -34,29 +38,26 @@ public class FileSystemAccessWrapper {
 
 					destinationParent.mkdirs();
 
-					try {
-						FileOutputStream fileOutputStream = new FileOutputStream(destFile);
-						InputStream inputStream = zipFile.getInputStream(entry);
+					FileOutputStream fileOutputStream = new FileOutputStream(destFile);
+					InputStream inputStream = zipFile.getInputStream(entry);
 
-						// Copy the bits from inputStream to fileOutputStream
-						byte[] buf = new byte[ONE_KB_BUFFER_SIZE];
-						int len;
+					// Copy the bits from inputStream to fileOutputStream
+					byte[] buf = new byte[ONE_KB_BUFFER_SIZE];
+					int len;
 
-						while ((len = inputStream.read(buf)) > 0) {
-							fileOutputStream.write(buf, 0, len);
-						}
-
-						inputStream.close();
-						fileOutputStream.close();
-					} catch (IOException ioe) {
-						ioe.printStackTrace(); //TODO
+					while ((len = inputStream.read(buf)) > 0) {
+						fileOutputStream.write(buf, 0, len);
 					}
+
+					inputStream.close();
+					fileOutputStream.close();
 				}
 			}
 
 			zipFile.close();
 		} catch (IOException ioe) {
-			ioe.printStackTrace(); // TODO
+			Log.e(AppParams.LOG_TAG, "An error occurred while unzipping " +
+					"[" + folderLocation + "] to [" + zipLocation + "] ", ioe);
 		}
 
 	}
@@ -78,11 +79,24 @@ public class FileSystemAccessWrapper {
 			bufferedInputStream.close();
 
 			return new String(buffer, Charset.defaultCharset());
-		} catch (Exception e) {
-			// TODO log or message
-			//LOGGER.error("An error occured while reading the file (" + filePath + ") into a string", e);
+		} catch (IOException ioe) {
+			Log.e(AppParams.LOG_TAG, "An error occurred while reading [" + filePath + "]", ioe);
 		}
 
 		return new String(buffer, Charset.defaultCharset());
+	}
+
+	public static void deleteFile(String pathToFile) {
+		if(!(new File(pathToFile)).delete()) {
+			Log.e(AppParams.LOG_TAG, "Could not delete file: " + pathToFile);
+		}		
+	}
+	
+	public static boolean isSynchronized() {
+		File sammelboxHome = new File(FileSystemLocations.SAMMELBOX_HOME);
+		
+		// if synchronized, there must be more than one file within the workspace
+		// (One temporary database file might exist)
+		return sammelboxHome.exists() && sammelboxHome.listFiles().length > 1; 
 	}
 }

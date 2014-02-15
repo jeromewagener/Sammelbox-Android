@@ -1,6 +1,8 @@
 package org.sammelbox.android.controller;
 
 
+import org.sammelbox.android.controller.query.DatabaseOpenHelper;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

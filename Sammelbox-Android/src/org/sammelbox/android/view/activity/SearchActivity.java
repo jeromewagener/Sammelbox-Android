@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.sammelbox.R;
-import org.sammelbox.android.GlobalState;
-import org.sammelbox.android.controller.DatabaseQueryOperation;
+import org.sammelbox.android.AppParams;
+import org.sammelbox.android.controller.AppState;
 import org.sammelbox.android.controller.DatabaseWrapper;
+import org.sammelbox.android.controller.query.DatabaseQueryOperation;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
 import org.sammelbox.android.model.querybuilder.QueryBuilderException;
@@ -18,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,6 +36,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 	private List<QueryComponent> queryComponents = new ArrayList<QueryComponent>();
@@ -52,7 +55,7 @@ public class SearchActivity extends Activity {
 	
 	private void initializeUI() {
 		final Spinner comboSelectAlbum = (Spinner) findViewById(R.id.comboSelectAlbum);		
-		final Map<String, String> albumNameToTableNameMapping = GlobalState.getAlbumNameToTableName(this);
+		final Map<String, String> albumNameToTableNameMapping = AppState.getAlbumNameToTableName(this);
 		
 		// Album selection spinner (combobox)
 		ArrayAdapter<String> albumListAdapter = new ArrayAdapter<String>(
@@ -118,8 +121,8 @@ public class SearchActivity extends Activity {
 						// clear value to search
 						((EditText) findViewById(R.id.edtSearchValue)).getText().clear();
 						
-						GlobalState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
-						GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
+						AppState.setSelectedAlbum((String) comboSelectAlbum.getSelectedItem());
+						AppState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAlbumItems(SearchActivity.this, 
 								DatabaseWrapper.executeRawSQLQuery(DatabaseWrapper.getSQLiteDatabaseInstance(SearchActivity.this), rawSqlQuery)));
 						
 						Intent openAlbumItemListToBrowse = new Intent(SearchActivity.this, AlbumItemBrowserActivity.class);
@@ -129,7 +132,8 @@ public class SearchActivity extends Activity {
 		                updateQueryComponentList(queryComponents);
 	                
 					} catch (QueryBuilderException queryBuilderException) {
-						// TODO show message
+						Toast.makeText(SearchActivity.this, getResources().getString(R.string.error_while_searching), Toast.LENGTH_LONG).show();
+						Log.e(AppParams.LOG_TAG, "An error occurred while executing the query", queryBuilderException);
 					}
 				}
 				

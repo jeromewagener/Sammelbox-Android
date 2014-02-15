@@ -1,14 +1,13 @@
-package org.sammelbox.android;
+package org.sammelbox.android.controller;
 
 import java.util.Map;
 
-import org.sammelbox.android.controller.DatabaseQueryOperation;
+import org.sammelbox.android.controller.query.DatabaseQueryOperation;
 import org.sammelbox.android.model.SimplifiedAlbumItemResultSet;
 
 import android.content.Context;
 
-// TODO very bad practice. Only for testing purposes. Sent this with the intent!
-public class GlobalState {
+public class AppState {
 	private static String selectedAlbum = null;
 	private static Long selectedAlbumItemID = null;
 	private static Map<String,String> albumNameToTableName = null;
@@ -20,7 +19,7 @@ public class GlobalState {
 	}
 
 	public static void setSelectedAlbum(String selectedAlbum) {
-		GlobalState.selectedAlbum = selectedAlbum;
+		AppState.selectedAlbum = selectedAlbum;
 	}
 
 	public static Map<String,String> getAlbumNameToTableName(Context context) {
@@ -32,7 +31,7 @@ public class GlobalState {
 	}
 
 	public static void setAlbumNameToTableName(Map<String,String> albumNameToTableName) {
-		GlobalState.albumNameToTableName = albumNameToTableName;
+		AppState.albumNameToTableName = albumNameToTableName;
 	}
 
 	public static SimplifiedAlbumItemResultSet getSimplifiedAlbumItemResultSet() {
@@ -41,14 +40,14 @@ public class GlobalState {
 
 	public static void setSimplifiedAlbumItemResultSet(
 			SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet) {
-		GlobalState.simplifiedAlbumItemResultSet = simplifiedAlbumItemResultSet;
+		AppState.simplifiedAlbumItemResultSet = simplifiedAlbumItemResultSet;
 	}
 
 	public static void setSelectedAlbumItemID(Long itemID) {
-		GlobalState.selectedAlbumItemID = itemID;
+		AppState.selectedAlbumItemID = itemID;
 	}
 	
 	public static Long getSelectedAlbumItemID() {
-		return GlobalState.selectedAlbumItemID;
+		return AppState.selectedAlbumItemID;
 	}
 }

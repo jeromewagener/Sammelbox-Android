@@ -3,6 +3,10 @@ package org.sammelbox.android.model.querybuilder;
 public class QueryBuilderException extends Exception {
 	private static final long serialVersionUID = 8009279995814569681L;
 
+	public QueryBuilderException() {
+		super();
+	}
+	
 	public QueryBuilderException(String message) {
 		super(message);
 	}

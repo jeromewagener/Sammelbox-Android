@@ -1,6 +1,6 @@
-package org.sammelbox.android.controller;
+package org.sammelbox.android;
 
-public final class GlobalParameters {
+public class AppParams {
 	public static final String LOG_TAG = "Sammelbox-Android";
 	
 	public static final int BEACON_PORT = 5454;

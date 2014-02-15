@@ -1,7 +1,7 @@
 package org.sammelbox.android.view.activity;
 
 import org.sammelbox.R;
-import org.sammelbox.android.GlobalState;
+import org.sammelbox.android.controller.AppState;
 import org.sammelbox.android.model.SimplifiedAlbumItemResultSet;
 import org.sammelbox.android.view.adapter.AlbumItemListAdapter;
 
@@ -24,9 +24,9 @@ public class AlbumItemBrowserActivity extends Activity {
 		setContentView(R.layout.activity_album_item_browser);
 		
 		TextView heading = (TextView)findViewById(R.id.lblAlbumItemBrowserHeading);
-		heading.setText(GlobalState.getSelectedAlbum());
+		heading.setText(AppState.getSelectedAlbum());
 		
-		SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet = GlobalState.getSimplifiedAlbumItemResultSet();
+		SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet = AppState.getSimplifiedAlbumItemResultSet();
 		
 		AlbumItemListAdapter adapter = new AlbumItemListAdapter(
 				AlbumItemBrowserActivity.this,
@@ -40,7 +40,7 @@ public class AlbumItemBrowserActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				GlobalState.setSelectedAlbumItemID(((AlbumItemListAdapter) parent.getAdapter()).getIDByPosition(position));
+				AppState.setSelectedAlbumItemID(((AlbumItemListAdapter) parent.getAdapter()).getIDByPosition(position));
 				
 				Intent openImageGallery = new Intent(AlbumItemBrowserActivity.this, GalleryActivity.class);
                 startActivity(openImageGallery);

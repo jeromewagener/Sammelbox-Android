@@ -3,9 +3,9 @@ package org.sammelbox.android.controller.sync;
 import java.security.NoSuchAlgorithmException;
 
 import org.sammelbox.R;
-import org.sammelbox.android.controller.FileSystemAccessWrapper;
-import org.sammelbox.android.controller.FileSystemLocations;
-import org.sammelbox.android.controller.GlobalParameters;
+import org.sammelbox.android.AppParams;
+import org.sammelbox.android.controller.filesystem.FileSystemAccessWrapper;
+import org.sammelbox.android.controller.filesystem.FileSystemLocations;
 import org.sammelbox.android.view.activity.SynchronizationActivity;
 
 import android.app.AlertDialog;
@@ -40,7 +40,7 @@ public class SyncObserver implements SoutilsObserver {
 		final String messageContent = soutilsMessage.getContent();
 		final String senderAddress = soutilsMessage.getSenderAddress();
 		
-		Log.i(GlobalParameters.LOG_TAG, 
+		Log.i(AppParams.LOG_TAG, 
 			  soutilsMessage.getMessageType() + ":" + soutilsMessage.getContent() + ":" + soutilsMessage.getSenderAddress(), 
 			  soutilsMessage.getThrowable());
 		
@@ -82,17 +82,23 @@ public class SyncObserver implements SoutilsObserver {
 							}
 						});
 				} catch (InterruptedException interruptedException) {
-					Log.e(GlobalParameters.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
+					Log.e(AppParams.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
 				}
 			}
 
 		} else if (messageContent.equals("sammelbox-desktop:transfer-finished")) {
-			FileSystemAccessWrapper.unzipFileToFolder(FileSystemLocations.SAMMELBOX_HOME + "sync.zip", FileSystemLocations.SAMMELBOX_HOME);
+			String zipFile = FileSystemLocations.SAMMELBOX_HOME + "sync.zip";
+			FileSystemAccessWrapper.unzipFileToFolder(zipFile, FileSystemLocations.SAMMELBOX_HOME);
+			FileSystemAccessWrapper.deleteFile(zipFile);
+			
 			synchronizationActivity.runOnUiThread(new Runnable(){
 			    @Override
 			    public void run() {
 			    	TextView syncInstructions = (TextView) synchronizationActivity.findViewById(R.id.lblSynchronizationInstructions);
 					syncInstructions.setText(R.string.sync_successful);
+					
+					ProgressBar transferProgress = (ProgressBar)synchronizationActivity.findViewById(R.id.pbTransferProgress);
+					transferProgress.setVisibility(View.GONE);
 			    }
 			});
 			
@@ -101,7 +107,7 @@ public class SyncObserver implements SoutilsObserver {
 				try {
 					Thread.sleep(UPDATE_INTERVAL_IN_MS);
 				} catch (InterruptedException interruptedException) {
-					Log.e(GlobalParameters.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
+					Log.e(AppParams.LOG_TAG, "An error occured while updating the progress bar", interruptedException);
 				}
 			}
 			
@@ -134,7 +140,7 @@ public class SyncObserver implements SoutilsObserver {
 				try {
 					md5HashedSyncCode = Soutilities.stringToMD5(value);
 				} catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-					Log.e(GlobalParameters.LOG_TAG, "Cannot compute hash", noSuchAlgorithmException);
+					Log.e(AppParams.LOG_TAG, "Cannot compute hash", noSuchAlgorithmException);
 				}
 				
 				if (md5HashedSyncCode.equals(receivedMessage.split(":")[2])) {

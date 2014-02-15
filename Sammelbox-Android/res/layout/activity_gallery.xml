@@ -10,6 +10,11 @@
         style="@style/sammelboxAndroidHeading"
         android:text="@string/image_gallery" />
     
+    <TextView
+        android:id="@+id/lblClickHint"
+        style="@style/sammelboxAndroidText"
+        android:visibility="gone" />
+    
     <ListView
         android:id="@+id/listAlbumItemImages"
         android:layout_width="fill_parent"

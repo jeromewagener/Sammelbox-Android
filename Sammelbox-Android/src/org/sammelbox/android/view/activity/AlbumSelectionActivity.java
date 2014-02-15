@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.sammelbox.R;
-import org.sammelbox.android.GlobalState;
-import org.sammelbox.android.controller.DatabaseQueryOperation;
+import org.sammelbox.android.AppParams;
+import org.sammelbox.android.controller.AppState;
 import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.controller.managers.SavedSearchManager;
 import org.sammelbox.android.controller.managers.SavedSearchManager.SavedSearch;
+import org.sammelbox.android.controller.query.DatabaseQueryOperation;
 import org.sammelbox.android.model.querybuilder.QueryBuilderException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -22,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class AlbumSelectionActivity extends Activity {
 	@Override
@@ -31,7 +34,7 @@ public class AlbumSelectionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_album_selection);
 		
-		final Map<String,String> albumNameToTableName = GlobalState.getAlbumNameToTableName(this);
+		final Map<String,String> albumNameToTableName = AppState.getAlbumNameToTableName(this);
 		final String[] albumNames = Arrays.copyOf(albumNameToTableName.keySet().toArray(), albumNameToTableName.keySet().toArray().length, String[].class);
 			
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albumNames);
@@ -40,8 +43,8 @@ public class AlbumSelectionActivity extends Activity {
 		
 		albumList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
-				GlobalState.setSelectedAlbum(albumNames[position]);
-				GlobalState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAllAlbumItemsFromAlbum(AlbumSelectionActivity.this));
+				AppState.setSelectedAlbum(albumNames[position]);
+				AppState.setSimplifiedAlbumItemResultSet(DatabaseQueryOperation.getAllAlbumItemsFromAlbum(AlbumSelectionActivity.this));
 				
 				Intent openAlbumItemListToBrowse = new Intent(AlbumSelectionActivity.this, AlbumItemBrowserActivity.class);
                 startActivity(openAlbumItemListToBrowse);
@@ -60,18 +63,18 @@ public class AlbumSelectionActivity extends Activity {
 		savedSearchesList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {				
 				SavedSearch savedSearch = SavedSearchManager.getSavedSearchByName(savedSearchesNames.get(position));
-				GlobalState.setSelectedAlbum(savedSearch.getAlbum());
+				AppState.setSelectedAlbum(savedSearch.getAlbum());
 								
 				try {
-					GlobalState.setSimplifiedAlbumItemResultSet(
+					AppState.setSimplifiedAlbumItemResultSet(
 							DatabaseQueryOperation.getAlbumItems(AlbumSelectionActivity.this, 
 									DatabaseWrapper.executeRawSQLQuery(
 											DatabaseWrapper.getSQLiteDatabaseInstance(
 													AlbumSelectionActivity.this),
 													savedSearch.getSQLQueryString(AlbumSelectionActivity.this))));
 				} catch (QueryBuilderException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Toast.makeText(AlbumSelectionActivity.this, getResources().getString(R.string.error_while_searching), Toast.LENGTH_LONG).show();
+					Log.e(AppParams.LOG_TAG, "An error occurred while executing the query", e);
 				}
 				
 				Intent openAlbumItemListToBrowse = new Intent(AlbumSelectionActivity.this, AlbumItemBrowserActivity.class);

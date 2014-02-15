@@ -23,11 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.sammelbox.android.controller.DatabaseQueryOperation;
+import org.sammelbox.android.AppParams;
 import org.sammelbox.android.controller.DatabaseWrapper;
+import org.sammelbox.android.controller.query.DatabaseQueryOperation;
 import org.sammelbox.android.model.FieldType;
 
 import android.content.Context;
+import android.util.Log;
 
 public final class QueryBuilder {
 	/** A private default constructor to forbid the creation of multiple instances */
@@ -158,10 +160,8 @@ public final class QueryBuilder {
 			
 		for (int i=0; i<queryComponents.size(); i++) {	
 			if (fieldNameToFieldTypeMap.get(queryComponents.get(i).getFieldName()) == null) {
-				// TODO show message
-				/*throw new QueryBuilderException(Translator.toBeTranslated(
-						"The following field seems to cause problems: " + queryComponents.get(i).getFieldName() + " " +
-						"Is this a renamed or deleted field? If yes, please adapt the search using the edit functionality."));*/
+				Log.e(AppParams.LOG_TAG, "An error occurred while executing the query");
+				throw new QueryBuilderException();
 			}
 			
 			if (fieldNameToFieldTypeMap.get(queryComponents.get(i).getFieldName()).equals(FieldType.OPTION) ||

@@ -30,8 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.sammelbox.android.controller.FileSystemAccessWrapper;
-import org.sammelbox.android.controller.FileSystemLocations;
+import org.sammelbox.android.AppParams;
 import org.sammelbox.android.controller.managers.SavedSearchManager.SavedSearch;
 import org.sammelbox.android.model.querybuilder.QueryComponent;
 import org.sammelbox.android.model.querybuilder.QueryOperator;
@@ -42,7 +41,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import android.util.Log;
+
 public final class XmlStorageWrapper {
+	private static final String DEFAULT_EXCEPTION_MESSAGE = "An error occurred while retrieving the saved searches";
+
 	private XmlStorageWrapper() {
 		// not needed
 	}
@@ -125,13 +128,13 @@ public final class XmlStorageWrapper {
 				}
 			}
 		} catch (ParserConfigurationException parserConfigurationException) {
-			// TODO
+			Log.e(AppParams.LOG_TAG, DEFAULT_EXCEPTION_MESSAGE, parserConfigurationException);
 		} catch (IOException ioException) {
-			// TODO
+			Log.e(AppParams.LOG_TAG, DEFAULT_EXCEPTION_MESSAGE, ioException);
 		} catch (SAXException saxException) {
-			// TODO
+			Log.e(AppParams.LOG_TAG, DEFAULT_EXCEPTION_MESSAGE, saxException);
 		} catch (XmlParsingException xmlParsingException) {
-			// TODO
+			Log.e(AppParams.LOG_TAG, DEFAULT_EXCEPTION_MESSAGE, xmlParsingException);
 		}
 		
 		return albumNamesToSavedSearches;

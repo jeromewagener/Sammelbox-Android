@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.sammelbox.android.GlobalState;
+import org.sammelbox.android.controller.AppState;
 import org.sammelbox.android.controller.filesystem.XmlStorageWrapper;
 import org.sammelbox.android.model.querybuilder.QueryBuilder;
 import org.sammelbox.android.model.querybuilder.QueryBuilderException;
@@ -85,7 +85,7 @@ public final class SavedSearchManager {
 		
 		for (String albumName : albumNamesToSavedSearches.keySet()) {
 			boolean found = false;
-			for (String albumNameFromDB : GlobalState.getAlbumNameToTableName(context).keySet()) {
+			for (String albumNameFromDB : AppState.getAlbumNameToTableName(context).keySet()) {
 				if (albumNameFromDB.equals(albumName)) {
 					found = true;
 					break;
@@ -176,23 +176,18 @@ public final class SavedSearchManager {
 		}
 	}
 
-	public static String getSqlQueryBySavedSearchName(String albumName, String savedSearchName, Context context) {
+	public static String getSqlQueryBySavedSearchName(String albumName, String savedSearchName, Context context) throws QueryBuilderException {
 		List<SavedSearch> savedSearches = albumNamesToSavedSearches.get(albumName);
 		
 		for (SavedSearch savedSearch : savedSearches) {
 			if (savedSearch.getName().equals(savedSearchName)) {
-				try {
-					if (savedSearch.getOrderByField() == null || savedSearch.getOrderByField().isEmpty()) {
-						return QueryBuilder.buildQuery(savedSearch.getQueryComponents(), 
-								savedSearch.isConnectedByAnd(), savedSearch.getAlbum(), context);
-					} else {
-						return QueryBuilder.buildQuery(savedSearch.getQueryComponents(), 
-								savedSearch.isConnectedByAnd(), savedSearch.getAlbum(), 
-								savedSearch.getOrderByField(), savedSearch.isOrderAscending(), context);
-					}
-				} catch (QueryBuilderException queryBuilderException) {
-					// TODO show message					
-					//ComponentFactory.getMessageBox(Translator.toBeTranslated("An error occurred"), queryBuilderException.getMessage(), SWT.ICON_ERROR);
+				if (savedSearch.getOrderByField() == null || savedSearch.getOrderByField().isEmpty()) {
+					return QueryBuilder.buildQuery(savedSearch.getQueryComponents(), 
+							savedSearch.isConnectedByAnd(), savedSearch.getAlbum(), context);
+				} else {
+					return QueryBuilder.buildQuery(savedSearch.getQueryComponents(), 
+							savedSearch.isConnectedByAnd(), savedSearch.getAlbum(), 
+							savedSearch.getOrderByField(), savedSearch.isOrderAscending(), context);
 				}
 			}
 		}

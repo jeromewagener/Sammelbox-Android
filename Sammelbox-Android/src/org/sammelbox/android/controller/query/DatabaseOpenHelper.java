@@ -1,4 +1,4 @@
-package org.sammelbox.android.controller;
+package org.sammelbox.android.controller.query;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

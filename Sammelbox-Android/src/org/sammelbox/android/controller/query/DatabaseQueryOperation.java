@@ -1,4 +1,4 @@
-package org.sammelbox.android.controller;
+package org.sammelbox.android.controller.query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.sammelbox.R;
-import org.sammelbox.android.GlobalState;
+import org.sammelbox.android.controller.AppState;
+import org.sammelbox.android.controller.DatabaseWrapper;
 import org.sammelbox.android.model.FieldType;
 import org.sammelbox.android.model.SimplifiedAlbumItemResultSet;
 
@@ -39,7 +40,7 @@ public class DatabaseQueryOperation {
 	}
 	
 	public static SimplifiedAlbumItemResultSet getAllAlbumItemsFromAlbum(Context context) {
-		String selectedTableName = GlobalState.getAlbumNameToTableName(context).get(GlobalState.getSelectedAlbum());
+		String selectedTableName = AppState.getAlbumNameToTableName(context).get(AppState.getSelectedAlbum());
 		Cursor cursor = DatabaseWrapper.executeRawSQLQuery(
 				DatabaseWrapper.getSQLiteDatabaseInstance(context), "select * from " + selectedTableName);
 		
@@ -49,7 +50,7 @@ public class DatabaseQueryOperation {
 	public static SimplifiedAlbumItemResultSet getAlbumItems(Context context, Cursor cursor) {
 		SimplifiedAlbumItemResultSet simplifiedAlbumItemResultSet = new SimplifiedAlbumItemResultSet();
 		
-		String selectedTableName = GlobalState.getAlbumNameToTableName(context).get(GlobalState.getSelectedAlbum());
+		String selectedTableName = AppState.getAlbumNameToTableName(context).get(AppState.getSelectedAlbum());
 		Map<String, FieldType> fieldNameToTypeMapping = 
 				retrieveFieldnameToFieldTypeMapping(DatabaseWrapper.getSQLiteDatabaseInstance(context), context, selectedTableName);
 		

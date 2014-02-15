@@ -4,7 +4,8 @@ import java.io.File;
 
 import org.sammelbox.R;
 import org.sammelbox.android.controller.DatabaseWrapper;
-import org.sammelbox.android.controller.FileSystemLocations;
+import org.sammelbox.android.controller.filesystem.FileSystemAccessWrapper;
+import org.sammelbox.android.controller.filesystem.FileSystemLocations;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class WelcomeActivity extends Activity {
     @Override
@@ -23,9 +25,9 @@ public class WelcomeActivity extends Activity {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         
-        // Initialize folder structure TODO extract into service
+        // Initialize folder structure
         File sammelboxHome = new File(FileSystemLocations.SAMMELBOX_HOME);
-        if (!sammelboxHome.exists()) {
+        if (!sammelboxHome.exists()) {        	
         	sammelboxHome.mkdir();
         }
         
@@ -34,19 +36,29 @@ public class WelcomeActivity extends Activity {
         btnOpenBrowseAlbumsAndSearches.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent openAlbumSelection = new Intent(WelcomeActivity.this, AlbumSelectionActivity.class);
-                startActivity(openAlbumSelection);
+            	if (FileSystemAccessWrapper.isSynchronized()) {            	
+            		Intent openAlbumSelection = new Intent(WelcomeActivity.this, AlbumSelectionActivity.class);
+                	startActivity(openAlbumSelection);
+            	} else {
+            		Toast.makeText(WelcomeActivity.this, 
+            				getResources().getString(R.string.synchronize_first), Toast.LENGTH_LONG).show();
+            	}
             }
         });
         
         // Search for particular items
         ImageButton btnOpenSearchForAlbumItems = (ImageButton) findViewById(R.id.btnOpenSearchForAlbumItems);
         btnOpenSearchForAlbumItems.setOnClickListener(new OnClickListener() {
-            @Override
+        	@Override
             public void onClick(View v) {
-                Intent openSearchForAlbumItems = new Intent(WelcomeActivity.this, SearchActivity.class);
-                startActivity(openSearchForAlbumItems);
-            }
+	        	if (FileSystemAccessWrapper.isSynchronized()) {            	
+	            	Intent openSearchForAlbumItems = new Intent(WelcomeActivity.this, SearchActivity.class);
+	                startActivity(openSearchForAlbumItems);
+	        	} else {
+	        		Toast.makeText(WelcomeActivity.this, 
+	        				getResources().getString(R.string.synchronize_first), Toast.LENGTH_LONG).show();
+	        	}
+        	}
         });
         
         // Open the synchronization

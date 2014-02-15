@@ -1,6 +1,6 @@
 package org.sammelbox.android.controller.sync;
 
-import org.sammelbox.android.controller.GlobalParameters;
+import org.sammelbox.android.AppParams;
 
 import com.jeromewagener.soutils.beaconing.BeaconReceiver;
 import com.jeromewagener.soutils.communication.Communication;
@@ -15,7 +15,7 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	@Override
 	public void startListeningForHashedSyncCodeBeacons(SoutilsObserver soutilsObserver) {
 		if (beaconReceiver == null) {
-			beaconReceiver = new BeaconReceiver(GlobalParameters.BEACON_PORT, soutilsObserver);
+			beaconReceiver = new BeaconReceiver(AppParams.BEACON_PORT, soutilsObserver);
 			beaconReceiver.start();
 		}
 	}
@@ -31,7 +31,7 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 	@Override
 	public void startCommunicationChannel(String hostIpAddress, SoutilsObserver soutilsObserver) {
 		if (communication == null) {
-			communication = new Communication(hostIpAddress, GlobalParameters.COMMUNICATION_PORT, soutilsObserver);
+			communication = new Communication(hostIpAddress, AppParams.COMMUNICATION_PORT, soutilsObserver);
 			communication.start();
 		}
 	}
@@ -56,7 +56,7 @@ public class SyncServiceClientImpl implements SyncServiceClient {
 			String storageLocationAsAbsolutPath, String ipAddress, SoutilsObserver soutilsObserver, long numberOfBytesToBeTransferred) {
 		if (fileTransferClient == null) {
 			fileTransferClient = new FileTransferClient(
-					storageLocationAsAbsolutPath, ipAddress, GlobalParameters.FILE_TRANSFER_PORT, soutilsObserver, numberOfBytesToBeTransferred);
+					storageLocationAsAbsolutPath, ipAddress, AppParams.FILE_TRANSFER_PORT, soutilsObserver, numberOfBytesToBeTransferred);
 			fileTransferClient.start();
 		}
 	}

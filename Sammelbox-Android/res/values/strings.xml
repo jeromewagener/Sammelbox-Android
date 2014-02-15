@@ -49,5 +49,9 @@
     <string name="enter_code_dialog_title">Enter Synchronization Code</string>
     <string name="enter_code_dialog_message">Please enter the synchronization code shown by Sammelbox on your PC</string>
     <string name="title_activity_image_viewer">ImageViewerActivity</string>
-
+	<string name="album_pictures_not_available">In order to be able to view the original pictures, 
+	    you will need to activate the full pictures synchronization in Sammelbox (Settings)</string>
+	<string name="error_while_searching">An error occurred while searching for matching items</string>
+	<string name="synchronize_first">Sammelbox-Android requires to be synchronized before its first use. 
+	    See the help menu for further information.</string>
 </resources>

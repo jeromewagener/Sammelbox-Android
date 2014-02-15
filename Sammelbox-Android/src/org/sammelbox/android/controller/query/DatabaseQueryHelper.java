@@ -1,4 +1,4 @@
-package org.sammelbox.android.controller;
+package org.sammelbox.android.controller.query;
 
 public class DatabaseQueryHelper {
 	static boolean isSpecialField(String fieldName) {
